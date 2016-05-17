@@ -1,2 +1,10 @@
-# HackerNew-Angular
-Practica del Lab de ASW. Facultat d'Informatica de Barcelona (FIB) - BarcelonaTech (UPC)
+#Practica ASW 2016
+
+Integrants de l'equip:
+
+* [Oriol Muñoz](https://github.com/Hanekoma)
+* [Aleix Pellisa](https://github.com/aleixpellisa)
+* [Víctor Pérez](https://github.com/victorpm5)
+* [Albert Suàrez](https://github.com/AlbertSuarez)
+
+####[Heroku link](http://hackernew.herokuapp.com/)
