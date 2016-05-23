@@ -1,0 +1,8 @@
+{
+  "name": "HackerNews",
+  "description": "HackerNews is a community of users who share news of the day.",
+  "repository": "https://github.com/victorpm5/HackerNew-Angular",
+  "logo": "http://medialab.github.io/artoo/public/img/hackernews.png",
+  "keywords": ["node", "express", "angular", "hackernews", "mongodb", "REST", "API"],
+  "addons": ["mongolab"]
+}
