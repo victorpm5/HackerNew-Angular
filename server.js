@@ -39,8 +39,23 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI, function (err, database) {
 
 // HACKER NEWS API ROUTES BELOW
 
-// Generic error handler used by all endpoints.
-function handleError(res, reason, message, code) {
-    console.log("ERROR: " + reason);
-    res.status(code || 500).json({"error": message});
-}
+// MODEL DEFINITIONS
+
+var Submission = mongoose.model('Submission', {
+    id: integer,
+    title: string,
+    url: string,
+    text: string,
+    user_id: integer,
+    created_at: string,
+    updated_at: string
+})
+
+app.get('/', function (req, res) {
+    Submission.find(function(err, submissions) {
+        if(err) {
+            res.send(err);
+        }
+        res.json(submissions);
+    });
+});
