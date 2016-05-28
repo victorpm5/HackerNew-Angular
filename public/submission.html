@@ -19,13 +19,13 @@
                     <tbody>
                     <tr>
                         <td style="width:18px;padding-right:4px">
-                            <a href="/"><img src="<%= asset_path( 'y18.gif' ) %>"></a>
+                            <a href="/"><img src="./img/y18.gif"></a>
                         </td>
                         <td class="header">
                             <font size="4"> <b><a href="/">Hacker News</a></b></font>
                             <font size="3"> 
                                 <a href="/">new</a> | 
-                                <%if current_user %> <a href="/threads">threads</a> | <% end %>
+                                <a href="/threads">threads</a> | 
                                 <a href="/ask">ask</a> | <a href="/submissions/new">submit</a>
                             </font>
                         </td>
@@ -69,26 +69,14 @@
                     <% else %>
                         <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
                     <% end %>
-                    <a href="/submissions/<%= @submission.id %>">
-                        <%= @submission.title %>
+                    <a id="submission_id_url" href="tobereplaced">
+                        {{ submissionTitle }}
                     </a>
                     <br>
-                    submitted by <a href="/users/<%= @submission.user.id %>">
-                    <%=@submission.user.name%></a>
+                    submitted by <a id="submitter_url" href="tobereplaced">
+                    {{ submitter }}</a>
                     
-                    <% time = (Time.now() - @submission.created_at) %>
-                                
-                    <% if time < 3600 %>
-                        <%= (time/60).round %> minutes ago | 
-                    <% end %>
-                
-                    <% if time >= 3600 && time < 3600*24 %>
-                        <%= (time/3600).round %> hours ago | 
-                    <% end %>
-                    
-                    <% if time >= 3600*24 %>
-                        <%= (time/(3600*24)).round %> days ago | 
-                    <% end %>
+                    {{ timeString }}
                     
                     <%= Comment.where('submission_id = ?', @submission.id).length %> comments
                     <br>
@@ -247,6 +235,21 @@
                 $scope.submissionTitle = response.data.title;
                 $scope.submissionText = response.data.text;
                 $scope.submissionUrl = response.data.url;
+                var time = (new Date().getTime() - new Date(response.data.created_at).getTime());
+                if (time < 3600*1000) {
+                    $scope.timeString = Math.round(time/(60*1000)) + " minutes ago";
+                }
+                if (time >= 3600*1000 && time < 3600*1000*24) {
+                    $scope.timeString = Math.round(time/(3600*1000)) + " hours ago";
+                }
+                if (time >= 3600*1000*24) {
+                    $scope.timeString = Math.round(time/(3600*24*1000)) + " days ago";
+                }
+                document.getElementById('submission_id_url').href = $scope.submissionUrl;
+                $http.get(response.data._links.user.href).then(function(response) {
+                    $scope.submitter = response.data.name;
+                    document.getElementById("submitter_url").href = "./user.html?username="+response.data.name;
+                });
             });
     }]);
 </script>
