@@ -32,7 +32,8 @@
                         <td>
                             <font size="3">
                                 <div align="right">
-                                  <a id="login" href="#" >Log in</a>
+                                    <a id="login" href="#" >Log in</a>
+                                    {{ token }}
                                     <script type="text/javascript">
                                         document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL; 
                                     </script>
@@ -210,6 +211,9 @@
           //Get ID out of current URL
           var submission_id = $location.search().id;
           $scope.submissionId = submission_id;
+          
+          var user_id = $location.search().token;
+          $scope.token = user_id;
           document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
           $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json")
             .then(function(response) {
