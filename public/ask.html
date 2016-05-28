@@ -1,10 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>HackerNews | Ask</title>
+    <title>Ask | Hacker News</title>
 </head>
-<body>
 
+<body>
+<center>
+    <table bgcolor="#f6f6ef" border="0" cellpadding="0" cellspacing="0" width="85%">
+        <tbody>
+        <tr>
+            <td bgcolor="ff6600">
+                <table style="padding:2px" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td style="width:18px;padding-right:4px">
+                            <a style="text-decoration:none;" href="/"><img src="<%= asset_path( 'y18.gif' ) %>"></a>
+                        </td>
+                        <td class="header">
+                            <font size="4"> <b><a style="text-decoration:none;" href="/">Hacker News</a></b></font>
+                            <font size="3"> 
+                                <a style="text-decoration:none;" href="/">new</a> | 
+                                <%if current_user %> <a style="text-decoration:none;" href="/threads">threads</a> | <% end %>
+                                <a style="text-decoration:none;" href="/ask"><font color="white">ask</font></a> | <a style="text-decoration:none;" href="/submissions/new">submit</a>
+                            </font>
+                        </td>
+                        <td>
+                            <font size="3">
+                                <div align="right">
+                                    <% if current_user %>
+                                    Signed in as <strong>
+                                    <%= link_to current_user.name, "/users/#{current_user.id}", id: "my_profile" %>
+                                </strong> |
+                                    <%= link_to "Sign out", signout_path, id: "sign_out" %>
+                                    <% else %>
+                                    <%= link_to "Log in", "/auth/google_oauth2", id: "sign_in" %>
+                                    <% end %>
+                                </div>
+                            </font>
+                        </td>
+                        <td class="spacer" style="width:10px"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr style="height:10px"></tr>
+        <tr>
+            <td>
+                <% i=1 %>
+                <% @submissions.each do |submission| %>
+                <% if submission.url == ""%>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td><font color="grey" size="3"><%= i %>.</font></td>
+                        <td>
+                            <% if current_user != nil && current_user.id != submission.user.id %>
+                                <form action="/submissions/<%= submission.id %>/vote" method="POST"
+                                      id="upvote_submission_form">
+                                    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                                    <% if current_user && !current_user.voted_for?(submission) %>
+                                    <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
+                                    <input type="image" name="submit_vote" src="grayarrow.gif">
+                                    <% elsif !current_user %>
+                                    <a style="text-decoration:none;" href="/auth/google_oauth2"><img src="grayarrow.gif"></a>
+                                    <% end %>
+                                </form>
+                            <% elsif current_user != nil %>
+                                <font color="orange" size="3">*</font>
+                            <% else %>
+                                <a style="text-decoration:none;" href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                            <% end %>
+                        </td>
+                        <td><font color="black" size="3"><a style="text-decoration:none;" href="/submissions/<%= submission.id %>"><%= submission.title
+                            %></a></font> </font></td>
+                    </tr>
+                    <table>
+                    <tr>
+                        <td>
+                            <font color="grey" size="2">
+                                <%= submission.votes.size %> points by <a style="text-decoration:none;" href="/users/<%= submission.user_id %>"><%= submission.user.name %></a>
+                                
+                                <% time = (Time.now() - submission.created_at) %>
+                                
+                                <% if time < 3600 %>
+                                    <a style="text-decoration:none;" href="/submissions/<%= submission.id %>"><%= (time/60).round %> minutes ago</a> | 
+                                <% end %>
+                            
+                                <% if time >= 3600 && time < 3600*24 %>
+                                    <a style="text-decoration:none;" href="/submissions/<%= submission.id %>"><%= (time/3600).round %> hours ago</a> | 
+                                <% end %>
+                                
+                                <% if time >= 3600*24 %>
+                                    <a style="text-decoration:none;" href="/submissions/<%= submission.id %>"><%= (time/(3600*24)).round %> days ago</a> | 
+                                <% end %>
+                                
+                                <a style="text-decoration:none;" href="/submissions/<%= submission.id %>"><%= Comment.where('submission_id = ?', submission.id).length %></a> comments
+                                
+                            </font>
+                        </td>
+                    </tr>
+                    <tr class="spacer" style="height:5px"></tr>
+                    <% i += 1 %>
+                    <% end %>
+                    <% end %>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+</center>
 </body>
-</html>
