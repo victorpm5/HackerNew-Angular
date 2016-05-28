@@ -32,14 +32,10 @@
                         <td>
                             <font size="3">
                                 <div align="right">
-                                    <% if current_user %>
-                                    Signed in as <strong>
-                                    <%= link_to current_user.name, "/users/#{current_user.id}", id: "my_profile" %>
-                                </strong> |
-                                    <%= link_to "Sign out", signout_path, id: "sign_out" %>
-                                    <% else %>
-                                    <%= link_to "Log in", "/auth/google_oauth2", id: "sign_in" %>
-                                    <% end %>
+                                  <a id="login" href="#" >Log in</a>
+                                    <script type="text/javascript">
+                                        document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL; 
+                                    </script>
                                 </div>
                             </font>
                         </td>
@@ -212,7 +208,7 @@
           }
            
           //Get ID out of current URL
-          var submission_id = $location.search()["id"];
+          var submission_id = $location.search().id;
           $scope.submissionId = submission_id;
           document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
           $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json")
