@@ -218,13 +218,8 @@
           var user_id = $location.search().userid;
           $scope.userId = user_id;
           
-          //si hi ha token, obtenim l'usuari per api
-          if (user_id) {
-             $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
-                .then(function(response) {
-                    $scope.userName = response.user.name;
-            });
-          }
+          var user_name = $location.search().username;
+          $scope.username = user_name;
           
           document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
           $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json")
