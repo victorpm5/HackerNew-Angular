@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<body>
+
+<div ng-app="submission_app" ng-controller="submission_ctrl">
+{{ currentid }}
+</div>
+
+<script>
+    var app = angular.module("submission_app", ["ngRoute"]);
+    
+    app.config(function($locationProvider) {
+        $locationProvider.html5Mode({
+          enabled: true,
+          requireBase: false
+        }).hashPrefix('!');
+    })
+
+    app.controller('submission_ctrl', ['$scope', '$location',
+       function ($scope, $location) {
+          //Get ID out of current URL
+          $scope.currentid = $location.search()["id"];
+          alert($scope.currentid);
+    }]);
+</script>
+
+</body>
+</html>
