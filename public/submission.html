@@ -5,7 +5,225 @@
 <body>
 
 <div ng-app="submission_app" ng-controller="submission_ctrl">
-{{ currentid }}
+<head>
+    <title>{{ submissionTitle }}</title>
+</head>
+
+<body>
+<center>
+    <table bgcolor="#f6f6ef" border="0" cellpadding="0" cellspacing="0" width="85%">
+        <tbody>
+        <tr>
+            <td bgcolor="ff6600">
+                <table style="padding:2px" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td style="width:18px;padding-right:4px">
+                            <a href="/"><img src="<%= asset_path( 'y18.gif' ) %>"></a>
+                        </td>
+                        <td class="header">
+                            <font size="4"> <b><a href="/">Hacker News</a></b></font>
+                            <font size="3"> 
+                                <a href="/">new</a> | 
+                                <%if current_user %> <a href="/threads">threads</a> | <% end %>
+                                <a href="/ask">ask</a> | <a href="/submissions/new">submit</a>
+                            </font>
+                        </td>
+                        <td>
+                            <font size="3">
+                                <div align="right">
+                                    <% if current_user %>
+                                    Signed in as <strong>
+                                    <%= link_to current_user.name, "/users/#{current_user.id}", id: "my_profile" %>
+                                </strong> |
+                                    <%= link_to "Sign out", signout_path, id: "sign_out" %>
+                                    <% else %>
+                                    <%= link_to "Log in", "/auth/google_oauth2", id: "sign_in" %>
+                                    <% end %>
+                                </div>
+                            </font>
+                        </td>
+                        <td class="spacer" style="width:10px"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr style="height:10px"></tr>
+        <tr>
+            <td>
+                <div style="color:grey;margin-left:10px">
+                    <% if current_user != nil && current_user.id != @submission.user.id %>
+                        <form action="tobereplaced" method="POST"
+                              id="upvote_submission_form">
+                            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                            <% if current_user && !current_user.voted_for?(@submission) %>
+                            <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
+                            <input type="image" name="submit_vote" src="/grayarrow.gif">
+                            <% elsif !current_user %>
+                            <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                            <% end %>
+                        </form>
+                    <% elsif current_user != nil %>
+                        <font color="orange" size="3">*</font>
+                    <% else %>
+                        <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                    <% end %>
+                    <a href="/submissions/<%= @submission.id %>">
+                        <%= @submission.title %>
+                    </a>
+                    <br>
+                    submitted by <a href="/users/<%= @submission.user.id %>">
+                    <%=@submission.user.name%></a>
+                    
+                    <% time = (Time.now() - @submission.created_at) %>
+                                
+                    <% if time < 3600 %>
+                        <%= (time/60).round %> minutes ago | 
+                    <% end %>
+                
+                    <% if time >= 3600 && time < 3600*24 %>
+                        <%= (time/3600).round %> hours ago | 
+                    <% end %>
+                    
+                    <% if time >= 3600*24 %>
+                        <%= (time/(3600*24)).round %> days ago | 
+                    <% end %>
+                    
+                    <%= Comment.where('submission_id = ?', @submission.id).length %> comments
+                    <br>
+                    <br>
+                    <%=@submission.text%>
+                    <br>
+                </div>
+
+                <br>
+                
+                
+                <div style="margin-left:20px">
+                    <form action="/comments" method="POST" id="comment_content_form">
+                        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                        <% if current_user %>
+                        <input type="hidden" name="comment[user_id]" value=<%=current_user.id %>>
+                        <% else %>
+                        <input type="hidden" name="comment[user_id]" value=<%= %>>
+                        <!-- definir q fer si no està logged -->
+                        <% end %>
+                        <input type="hidden" name="comment[submission_id]" value=<%=@submission.id %>>
+                        <textarea name="comment[content]" value="" form="comment_content_form"
+                                  style="min-width:500px;min-height:100px"></textarea>
+                        <br>
+                        <input type="submit" value="add comment">
+                    </form>
+                </div>
+                <br>
+                <br>
+                
+                <p style="margin-left:20px" id="notice"><%= notice %></p>
+                <br>
+
+                <% @comments.each do |comentari| %>
+                <div style="margin-left:10px">
+                    <table>
+                        <tr>
+                            <td>
+                        <% if current_user != nil && current_user.id != comentari.user.id %>
+                            <form action="/comments/<%= comentari.id %>/vote" method="POST"
+                              id="upvote_comment_form">
+                                <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                                <% if current_user && !current_user.voted_for?(comentari) %>
+                                <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
+                                <input type="image" name="submit_vote" src="/grayarrow.gif">
+                                <% elsif !current_user %>
+                                <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                                <% end %>
+                            </form>
+                        <% elsif current_user != nil %>
+                            <font color="orange" size="3">*</font>
+                        <% else %>
+                            <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                        <% end %>
+                        </td>
+                            <td><a href="/users/<%= comentari.user.id %>"><%= comentari.user.name %></a>
+                            
+                            <% time = (Time.now() - comentari.created_at) %>
+                                
+                            <% if time < 3600 %>
+                                <a href="/comments/<%= comentari.id %>/new_reply"><%= (time/60).round %> minutes ago</a> | 
+                            <% end %>
+                        
+                            <% if time >= 3600 && time < 3600*24 %>
+                                <a href="/comments/<%= comentari.id %>/new_reply"><%= (time/3600).round %> hours ago</a> | 
+                            <% end %>
+                            
+                            <% if time >= 3600*24 %>
+                                <a href="/comments/<%= comentari.id %>/new_reply"><%= (time/(3600*24)).round %> days ago</a> | 
+                            <% end %>
+                            
+                        </tr>
+                        </table>
+                        <table>
+                        <tr>
+                            <td style="color:grey;"> <%= comentari.content %></td>
+                        </tr>
+                    </table>
+                    <a href="/comments/<%= comentari.id %>/new_reply">reply</a>
+                </div>
+
+                <%@replies=Reply.where("comment_id=?",comentari.id).order("created_at DESC")%>
+                <% @replies.each do |reply| %>
+                <div style="color:grey;margin-left:25px">
+                    <table>
+                        <tr>
+                            <td>
+                            <% if current_user != nil && current_user.id != reply.user.id %>
+                                <form action="/replies/<%= reply.id %>/vote" method="POST"
+                                  id="upvote_reply_form">
+                                    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                                    <% if current_user && !current_user.voted_for?(reply) %>
+                                    <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
+                                    <input type="image" name="submit_vote" src="/grayarrow.gif">
+                                    <% elsif !current_user %>
+                                    <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                                    <% end %>
+                                </form>
+                            <% elsif current_user != nil %>
+                                <font color="orange" size="3">*</font>
+                            <% else %>
+                                <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                            <% end %>
+                            </td>
+                            <td><a href="/users/<%= reply.comment.user.id %>"><%= reply.user.name %></a>
+
+                                <% time = (Time.now() - reply.created_at) %>
+                                    
+                                <% if time < 3600 %>
+                                    <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/60).round %> minutes ago</a> | 
+                                <% end %>
+                            
+                                <% if time >= 3600 && time < 3600*24 %>
+                                    <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/3600).round %> hours ago</a> | 
+                                <% end %>
+                                
+                                <% if time >= 3600*24 %>
+                                    <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/(3600*24)).round %> days ago</a> | 
+                                <% end %>
+                                
+                        </tr>
+                        </table><table>
+                        <tr>
+                            <td> <%= reply.content %></td>
+                        </tr>
+                    </table>
+                </div>
+                <% end %>
+                <br>
+                <% end %>
+            </td>
+        </tr>
+    </table>
+</center>
+</body>
 </div>
 
 <script>
@@ -18,11 +236,18 @@
         }).hashPrefix('!');
     })
 
-    app.controller('submission_ctrl', ['$scope', '$location',
-       function ($scope, $location) {
+    app.controller('submission_ctrl', ['$scope', '$location', '$http',
+       function ($scope, $location, $http) {
           //Get ID out of current URL
-          $scope.currentid = $location.search()["id"];
-          alert($scope.currentid);
+          var submission_id = $location.search()["id"];
+          $scope.submissionId = submission_id;
+          document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
+          $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json")
+            .then(function(response) {
+                $scope.submissionTitle = response.data.title;
+                $scope.submissionText = response.data.text;
+                $scope.submissionUrl = response.data.url;
+            });
     }]);
 </script>
 
