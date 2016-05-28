@@ -69,11 +69,11 @@
                     <% else %>
                         <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                     <% end %>
-                    <a id="submission_id_url" href="tobereplaced">
+                    <a ng-href="{{ submissionUrl }}">
                         {{ submissionTitle }}
                     </a>
                     <br>
-                    submitted by <a id="submitter_url" href="tobereplaced">
+                    submitted by <a ng-href="{{ submissionUserUrl }}">
                     {{ submitter }}</a>
                     
                     {{ timeString }}
@@ -101,8 +101,7 @@
                 <p style="margin-left:20px" id="notice"><%= notice %></p>
                 <br>
 
-                <% @comments.each do |comentari| %>
-                <div style="margin-left:10px">
+                <div style="margin-left:10px" ng-repeat="comment in comments">
                     <table>
                         <tr>
                             <td>
@@ -123,81 +122,70 @@
                             <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                         <% end %>
                         </td>
-                            <td><a href="/users/<%= comentari.user.id %>"><%= comentari.user.name %></a>
+                            <td><a ng-href="/users/{{comment.user_id}}">{{ comment.username }}</a>
                             
-                            <% time = (Time.now() - comentari.created_at) %>
-                                
-                            <% if time < 3600 %>
-                                <a href="/comments/<%= comentari.id %>/new_reply"><%= (time/60).round %> minutes ago</a> | 
-                            <% end %>
-                        
-                            <% if time >= 3600 && time < 3600*24 %>
-                                <a href="/comments/<%= comentari.id %>/new_reply"><%= (time/3600).round %> hours ago</a> | 
-                            <% end %>
-                            
-                            <% if time >= 3600*24 %>
-                                <a href="/comments/<%= comentari.id %>/new_reply"><%= (time/(3600*24)).round %> days ago</a> | 
-                            <% end %>
+                            {{ comment.ago }}
                             
                         </tr>
                         </table>
                         <table>
                         <tr>
-                            <td style="color:grey;"> <%= comentari.content %></td>
+                            <td style="color:grey;"> {{ comment.content }}</td>
                         </tr>
                     </table>
-                    <a href="/comments/<%= comentari.id %>/new_reply">reply</a>
-                </div>
-
-                <%@replies=Reply.where("comment_id=?",comentari.id).order("created_at DESC")%>
-                <% @replies.each do |reply| %>
-                <div style="color:grey;margin-left:25px">
-                    <table>
-                        <tr>
-                            <td>
-                            <% if current_user != nil && current_user.id != reply.user.id %>
-                                <form action="/replies/<%= reply.id %>/vote" method="POST"
-                                  id="upvote_reply_form">
-                                    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-                                    <% if current_user && !current_user.voted_for?(reply) %>
-                                    <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
-                                    <input type="image" name="submit_vote" src="./img/grayarrow.gif">
-                                    <% elsif !current_user %>
-                                    <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
+                    <a ng-href="/comments/{{comment.id}}/new_reply">reply</a>
+                    
+                        <%@replies=Reply.where("comment_id=?",comentari.id).order("created_at DESCA")%>
+                        <% @replies.each do |reply| %>
+                        <div style="color:grey;margin-left:25px">
+                            <table>
+                                <tr>
+                                    <td>
+                                    <% if current_user != nil && current_user.id != reply.user.id %>
+                                        <form action="/replies/<%= reply.id %>/vote" method="POST"
+                                          id="upvote_reply_form">
+                                            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                                            <% if current_user && !current_user.voted_for?(reply) %>
+                                            <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
+                                            <input type="image" name="submit_vote" src="./img/grayarrow.gif">
+                                            <% elsif !current_user %>
+                                            <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
+                                            <% end %>
+                                        </form>
+                                    <% elsif current_user != nil %>
+                                        <font color="orange" size="3">*</font>
+                                    <% else %>
+                                        <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                                     <% end %>
-                                </form>
-                            <% elsif current_user != nil %>
-                                <font color="orange" size="3">*</font>
-                            <% else %>
-                                <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                            <% end %>
-                            </td>
-                            <td><a href="/users/<%= reply.comment.user.id %>"><%= reply.user.name %></a>
-
-                                <% time = (Time.now() - reply.created_at) %>
+                                    </td>
+                                    <td><a href="/users/<%= reply.comment.user.id %>"><%= reply.user.name %></a>
+        
+                                        <% time = (Time.now() - reply.created_at) %>
+                                            
+                                        <% if time < 3600 %>
+                                            <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/60).round %> minutes ago</a> | 
+                                        <% end %>
                                     
-                                <% if time < 3600 %>
-                                    <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/60).round %> minutes ago</a> | 
-                                <% end %>
-                            
-                                <% if time >= 3600 && time < 3600*24 %>
-                                    <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/3600).round %> hours ago</a> | 
-                                <% end %>
-                                
-                                <% if time >= 3600*24 %>
-                                    <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/(3600*24)).round %> days ago</a> | 
-                                <% end %>
-                                
-                        </tr>
-                        </table><table>
-                        <tr>
-                            <td> <%= reply.content %></td>
-                        </tr>
-                    </table>
+                                        <% if time >= 3600 && time < 3600*24 %>
+                                            <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/3600).round %> hours ago</a> | 
+                                        <% end %>
+                                        
+                                        <% if time >= 3600*24 %>
+                                            <a href="/comments/<%= reply.comment.id %>/new_reply"><%= (time/(3600*24)).round %> days ago</a> | 
+                                        <% end %>
+                                        
+                                </tr>
+                                </table><table>
+                                <tr>
+                                    <td> <%= reply.content %></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <% end %>
                 </div>
-                <% end %>
+
+                
                 <br>
-                <% end %>
             </td>
         </tr>
     </table>
@@ -223,6 +211,21 @@
 
     app.controller('submission_ctrl', ['$scope', '$location', '$http',
        function ($scope, $location, $http) {
+          $scope.agoFunction = function(date)  {
+                var time = (new Date().getTime() - new Date(date).getTime());
+                var timestring = "";
+                if (time < 3600*1000) {
+                    timestring = Math.round(time/(60*1000)) + " minutes ago";
+                }
+                if (time >= 3600*1000 && time < 3600*1000*24) {
+                    timestring = Math.round(time/(3600*1000)) + " hours ago";
+                }
+                if (time >= 3600*1000*24) {
+                    timestring = Math.round(time/(3600*24*1000)) + " days ago";
+                }
+                return timestring;
+          }
+           
           //Get ID out of current URL
           var submission_id = $location.search()["id"];
           $scope.submissionId = submission_id;
@@ -233,23 +236,20 @@
                 $scope.submissionText = response.data.text;
                 $scope.submissionUrl = response.data.url;
                 $scope.submissionText = response.data.text;
-                var time = (new Date().getTime() - new Date(response.data.created_at).getTime());
-                if (time < 3600*1000) {
-                    $scope.timeString = Math.round(time/(60*1000)) + " minutes ago";
-                }
-                if (time >= 3600*1000 && time < 3600*1000*24) {
-                    $scope.timeString = Math.round(time/(3600*1000)) + " hours ago";
-                }
-                if (time >= 3600*1000*24) {
-                    $scope.timeString = Math.round(time/(3600*24*1000)) + " days ago";
-                }
-                document.getElementById('submission_id_url').href = $scope.submissionUrl;
+                $scope.timeString = $scope.agoFunction(response.data.created_at);
                 $http.get(response.data._links.user.href).then(function(response) {
                     $scope.submitter = response.data.name;
-                    document.getElementById("submitter_url").href = "./user.html?username="+response.data.name;
+                    $scope.submissionUserUrl = "./user.html?username="+response.data.name;
                 });
                 $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+"/comments.json").then(function(response) {
                     $scope.numberOfComments = response.data.length;
+                    response.data.forEach(function(comment) {
+                        $http.get(comment._links.user.href).then(function(response) {
+                            comment.username = response.data.name;
+                        });
+                        comment.ago = $scope.agoFunction(comment.created_at);
+                    });
+                    $scope.comments = response.data;
                 });
             });
     }]);
