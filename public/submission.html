@@ -59,15 +59,15 @@
                             <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
                             <% if current_user && !current_user.voted_for?(@submission) %>
                             <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
-                            <input type="image" name="submit_vote" src="/grayarrow.gif">
+                            <input type="image" name="submit_vote" src="./img/grayarrow.gif">
                             <% elsif !current_user %>
-                            <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                            <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                             <% end %>
                         </form>
                     <% elsif current_user != nil %>
                         <font color="orange" size="3">*</font>
                     <% else %>
-                        <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                        <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                     <% end %>
                     <a id="submission_id_url" href="tobereplaced">
                         {{ submissionTitle }}
@@ -78,10 +78,10 @@
                     
                     {{ timeString }}
                     
-                    <%= Comment.where('submission_id = ?', @submission.id).length %> comments
+                    {{ numberOfComments }} comments
                     <br>
                     <br>
-                    <%=@submission.text%>
+                    {{ submissionText }}
                     <br>
                 </div>
 
@@ -89,19 +89,10 @@
                 
                 
                 <div style="margin-left:20px">
-                    <form action="/comments" method="POST" id="comment_content_form">
-                        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-                        <% if current_user %>
-                        <input type="hidden" name="comment[user_id]" value=<%=current_user.id %>>
-                        <% else %>
-                        <input type="hidden" name="comment[user_id]" value=<%= %>>
-                        <!-- definir q fer si no està logged -->
-                        <% end %>
-                        <input type="hidden" name="comment[submission_id]" value=<%=@submission.id %>>
-                        <textarea name="comment[content]" value="" form="comment_content_form"
+                    <form id="comment_content_form" novalidate class="simple-form">
+                        <textarea id="new_comment_content" value="" form="comment_content_form"
                                   style="min-width:500px;min-height:100px"></textarea>
-                        <br>
-                        <input type="submit" value="add comment">
+                        <input type="submit" ng-click="submitComment(comment)" value="add comment" />
                     </form>
                 </div>
                 <br>
@@ -121,15 +112,15 @@
                                 <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
                                 <% if current_user && !current_user.voted_for?(comentari) %>
                                 <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
-                                <input type="image" name="submit_vote" src="/grayarrow.gif">
+                                <input type="image" name="submit_vote" src="./img/grayarrow.gif">
                                 <% elsif !current_user %>
-                                <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                                <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                                 <% end %>
                             </form>
                         <% elsif current_user != nil %>
                             <font color="orange" size="3">*</font>
                         <% else %>
-                            <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                            <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                         <% end %>
                         </td>
                             <td><a href="/users/<%= comentari.user.id %>"><%= comentari.user.name %></a>
@@ -170,15 +161,15 @@
                                     <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
                                     <% if current_user && !current_user.voted_for?(reply) %>
                                     <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
-                                    <input type="image" name="submit_vote" src="/grayarrow.gif">
+                                    <input type="image" name="submit_vote" src="./img/grayarrow.gif">
                                     <% elsif !current_user %>
-                                    <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                                    <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                                     <% end %>
                                 </form>
                             <% elsif current_user != nil %>
                                 <font color="orange" size="3">*</font>
                             <% else %>
-                                <a href="/auth/google_oauth2"><img src="/grayarrow.gif"></a>
+                                <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
                             <% end %>
                             </td>
                             <td><a href="/users/<%= reply.comment.user.id %>"><%= reply.user.name %></a>
@@ -222,7 +213,13 @@
           enabled: true,
           requireBase: false
         }).hashPrefix('!');
-    })
+    });
+    
+    app.controller('submission_form_ctrl', ['$scope', function($scope) {
+        $scope.submitComment = function(comment) {
+            alert("sfd");
+        };
+    }]);
 
     app.controller('submission_ctrl', ['$scope', '$location', '$http',
        function ($scope, $location, $http) {
@@ -235,6 +232,7 @@
                 $scope.submissionTitle = response.data.title;
                 $scope.submissionText = response.data.text;
                 $scope.submissionUrl = response.data.url;
+                $scope.submissionText = response.data.text;
                 var time = (new Date().getTime() - new Date(response.data.created_at).getTime());
                 if (time < 3600*1000) {
                     $scope.timeString = Math.round(time/(60*1000)) + " minutes ago";
@@ -249,6 +247,9 @@
                 $http.get(response.data._links.user.href).then(function(response) {
                     $scope.submitter = response.data.name;
                     document.getElementById("submitter_url").href = "./user.html?username="+response.data.name;
+                });
+                $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+"/comments.json").then(function(response) {
+                    $scope.numberOfComments = response.data.length;
                 });
             });
     }]);
