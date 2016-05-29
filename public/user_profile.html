@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<div ng-app="submission_app" ng-controller="submission_ctrl">
+
 <head>
   <title>Profile: <%= @user.name %> | Hacker News</title>
 </head>
@@ -12,27 +17,21 @@
                     <tbody>
                     <tr>
                         <td style="width:18px;padding-right:4px">
-                            <a style="text-decoration:none;" href="/"><img src="<%= asset_path( 'y18.gif' ) %>"></a>
+                            <a style="text-decoration:none;" href="/"><img src="./img/y18.gif"></a>
                         </td>
                         <td class="header">
                             <font size="4"> <b><a style="text-decoration:none;" href="/">Hacker News</a></b></font>
                             <font size="3"> 
                                 <a style="text-decoration:none;" href="/">new</a> | 
-                                <%if current_user %> <a style="text-decoration:none;" href="/threads">threads</a> | <% end %>
+                                <a style="text-decoration:none;" href="/threads">threads</a> |
                                 <a style="text-decoration:none;" href="/ask">ask</a> | <a style="text-decoration:none;" href="/submissions/new">submit</a>
                             </font>
                         </td>
                         <td>
                             <font size="3">
                                 <div align="right">
-                                    <% if current_user %>
-                                    Signed in as <strong>
-                                    <%= link_to current_user.name, "/users/#{current_user.id}", id: "my_profile" %>
-                                </strong> |
-                                    <%= link_to "Sign out", signout_path, id: "sign_out" %>
-                                    <% else %>
-                                    <%= link_to "Log in", "/auth/google_oauth2", id: "sign_in" %>
-                                    <% end %>
+                                    <a id="login" href="#" >Log in</a>
+                                    <a id="logout" href="#" >| Log out</a>
                                 </div>
                             </font>
                         </td>
@@ -50,31 +49,31 @@
                 <div style="margin-left:20px">
                   <p>
                     <strong>Name:</strong>
-                    <%= @user.name %>
+                    <%= {{ user.name }} %>
                   </p>
                   
                   <p>
                     <strong>Created at:</strong>
-                    <%= @user.created_at %>
+                    <%= {{ user.created_at }} %>
                   </p>
                   
                   <% if current_user && current_user.id == @user.id %>
                   
                     <p>
                       <strong>Email:</strong>
-                      <%= @user.email %>
+                      <%= {{ user.email }} %>
                     </p>
                     
                     <p>
                       <strong>Personal Api Key:</strong>
-                      <%= @user.oauth_token %>
+                      <%= {{ user.oauth_token }} %>
                     </p>
                   
                   <% end %>
                   
                   <p>
                     <strong>About:</strong>
-                    <%= @user.about %>
+                    <%= {{ user.about }} %>
                   </p>
                   
                   <% if current_user && current_user.id == @user.id %>
@@ -103,3 +102,88 @@
     </table>
   </center>
 </body>
+
+
+    <script>
+        var app = angular.module("submission_app", ["ngRoute"]);
+
+        app.config(function($locationProvider) {
+            $locationProvider.html5Mode({
+                enabled: true,
+                requireBase: false
+            }).hashPrefix('!');
+        });
+
+        app.controller('submission_ctrl', ['$scope', '$location', '$http',
+            function ($scope, $location, $http) {
+                $scope.agoFunction = function(date)  {
+                    var time = (new Date().getTime() - new Date(date).getTime());
+                    var timestring = "";
+                    if (time < 3600*1000) {
+                        timestring = Math.round(time/(60*1000)) + " minutes ago";
+                    }
+                    if (time >= 3600*1000 && time < 3600*1000*24) {
+                        timestring = Math.round(time/(3600*1000)) + " hours ago";
+                    }
+                    if (time >= 3600*1000*24) {
+                        timestring = Math.round(time/(3600*24*1000)) + " days ago";
+                    }
+                    return timestring;
+                }
+
+                //Get ID out of current URL
+                var submission_id = $location.search().id;
+                $scope.submissionId = submission_id;
+
+                var token_id = $location.search().token;
+                $scope.token = token_id;
+
+                var user_id = $location.search().userid;
+                $scope.userId = user_id;
+
+                if(user_id){
+                    document.getElementById("login").href="/users/" + user_id;
+                    document.getElementById("login").textContent = "usuari";
+                    document.getElementById("logout").style.display = "inline";
+                    document.getElementById("logout").href="/";
+                    $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
+                            .then(function(response) {
+                                document.getElementById("login").textContent = response.data.name;
+                            });
+                }
+                else{
+                    document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL;
+                    document.getElementById("login").textContent = "login";
+                    document.getElementById("logout").style.display = "none";
+                }
+
+            document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
+                $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json").then(function(response) {
+                    $scope.submissionTitle = response.data.title;
+                    $scope.submissionText = response.data.text;
+                    $scope.submissionUrl = response.data.url;
+                    $scope.submissionText = response.data.text;
+                    $scope.timeString = $scope.agoFunction(response.data.created_at);
+                    $http.get(response.data._links.user.href).then(function(response) {
+                        $scope.submitter = response.data.name;
+                        $scope.submissionUserUrl = "./user.html?username="+response.data.name;
+                    });
+                    $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+"/comments.json").then(function(response) {
+                        $scope.numberOfComments = response.data.length;
+                        response.data.forEach(function(comment) {
+                            $http.get(comment._links.user.href).then(function(response) {
+                                comment.username = response.data.name;
+                            });
+                            $http.get("https://hackernew.herokuapp.com/comments/"+comment.id+"/replies.json").then(function(response) {
+                                comment.replies = response.data;
+                            });
+                            comment.ago = $scope.agoFunction(comment.created_at);
+                        });
+                        $scope.comments = response.data;
+                    });
+                });
+            }]);
+    </script>
+
+
+</div>
