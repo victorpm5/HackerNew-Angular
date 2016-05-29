@@ -215,14 +215,15 @@
           var user_id = $location.search().userid;
           $scope.userId = user_id;
           
-          var user_name = $location.search().username;
-          $scope.username = user_name;
-          
           if(user_id){
               document.getElementById("login").href="/users/" + user_id;
-              document.getElementById("login").textContent = user_name;
+              document.getElementById("login").textContent = "usuari";
               document.getElementById("logout").style.display = "inline";
               document.getElementById("logout").href="/";
+             $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
+              .then(function(response) {
+                    document.getElementById("login").textContent = response.data.name;
+             });
           }
           else{
               document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL;
