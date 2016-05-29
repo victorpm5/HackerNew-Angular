@@ -21,7 +21,7 @@
                                             <font size="4"> <b><a style="text-decoration:none;" href="/">Hacker News</a></b></font>
                                             <font size="3">
                                                 <a style="text-decoration:none;" href="/"><font color="white">new</font></a> |
-                                                <a style="text-decoration:none;" href="/threads">threads</a> | <% end %>
+                                                <a style="text-decoration:none;" href="/threads">threads</a> |
                                                 <a style="text-decoration:none;" href="/ask">ask</a> | <a style="text-decoration:none;" href="/submissions/new">submit</a>
                                             </font>
                                         </td>
@@ -42,14 +42,13 @@
                     <tr style="height:10px"></tr>
                     <tr>
                         <td>
-                            <% i=1 %>
-                            <div style="margin-left:10px" ng-repeat="submission in submissions">
-                                <% if {{ submission.url }} != ""%>
+                            <div ng-repeat="submission in submissions">
+                                <div ng-if="submission != ''">
                                     <table>
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <font color="grey" size="3"><%= i %>.</font>
+                                                    <font color="grey" size="3">1.</font>
                                                 </td>
                                                 <td>
                                                     <% if current_user != nil && current_user.id != {{ submission.user_id }} %>
@@ -89,11 +88,11 @@
                                             </td>
                                         </tr>
                                         <tr class="spacer" style="height:5px"></tr>
-                                        <% i += 1 %>
-                                    <% end %>
-                                <% end %>
-                                </tbody>
-                                </table>
+                                        <% end %>
+                                        <% end %>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </td>
                     </tr>
