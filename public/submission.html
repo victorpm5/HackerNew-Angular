@@ -33,10 +33,7 @@
                             <font size="3">
                                 <div align="right">
                                     <a id="login" href="#" >Log in</a>
-                                    {{ token }}
-                                    <script type="text/javascript">
-                                        document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL; 
-                                    </script>
+                                    <a id="logout" href="#" >| Log out</a>
                                 </div>
                             </font>
                         </td>
@@ -220,6 +217,18 @@
           
           var user_name = $location.search().username;
           $scope.username = user_name;
+          
+          if(user_id){
+              document.getElementById("login").href="/users/" + user_id;
+              document.getElementById("login").textContent = user_name;
+              document.getElementById("logout").style.display = "inline";
+              document.getElementById("logout").href="/";
+          }
+          else{
+              document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL;
+              document.getElementById("login").textContent = "login";
+              document.getElementById("logout").style.display = "none";
+          }
           
           document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
           $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json")
