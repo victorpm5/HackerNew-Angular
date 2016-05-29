@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
-<div ng-app="submission_app" ng-controller="submission_ctrl">
+<div ng-app="user_app" ng-controller="user_ctrl">
 
 <head>
   <title>Profile: <%= @user.name %> | Hacker News</title>
@@ -57,7 +57,7 @@
                     <%= {{ user.created_at }} %>
                   </p>
                   
-                  <% if current_user && current_user.id == @user.id %>
+                  <div ng-if="current_user && current_user.id == {{user.id}}">
                   
                     <p>
                       <strong>Email:</strong>
@@ -69,7 +69,7 @@
                       <%= {{ user.oauth_token }} %>
                     </p>
                   
-                  <% end %>
+                  </div>
                   
                   <p>
                     <strong>About:</strong>
@@ -105,7 +105,7 @@
 
 
     <script>
-        var app = angular.module("submission_app", ["ngRoute"]);
+        var app = angular.module("user_app", ["ngRoute"]);
 
         app.config(function($locationProvider) {
             $locationProvider.html5Mode({
@@ -114,7 +114,7 @@
             }).hashPrefix('!');
         });
 
-        app.controller('submission_ctrl', ['$scope', '$location', '$http',
+        app.controller('user_ctrl', ['$scope', '$location', '$http',
             function ($scope, $location, $http) {
                 $scope.agoFunction = function(date)  {
                     var time = (new Date().getTime() - new Date(date).getTime());
