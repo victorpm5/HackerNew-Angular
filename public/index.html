@@ -43,7 +43,7 @@
                     <tr>
                         <td>
                             <div ng-repeat="submission in submissions">
-                                <div ng-if="submission != ''">
+                                    hey
                                     <table>
                                         <tbody>
                                             <tr>
@@ -73,26 +73,22 @@
                                                     </font> <font color="grey" size="2">({{submission.url}})</font>
                                                 </td>
                                             </tr>
-                                    </table>
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <font color="grey" size="2">
-                                                    0 points by <a style="text-decoration:none;" href="/users/{{submission.user_id}}">{{submission.username}}</a>
+                                            <tr>
+                                                <td>
+                                                    <font color="grey" size="2">
+                                                        0 points by <a style="text-decoration:none;" href="/users/{{submission.user_id}}">{{submission.username}}</a>
 
-                                                    $scope.agoFunction({{submission.created_at}});
+                                                        $scope.agoFunction({{submission.created_at}});
 
-                                                    <a style="text-decoration:none;" href="/submissions/<%= submission.id %>">0</a> comments
+                                                        <a style="text-decoration:none;" href="/submissions/<%= submission.id %>">0</a> comments
 
-                                                </font>
-                                            </td>
-                                        </tr>
-                                        <tr class="spacer" style="height:5px"></tr>
-                                        <% end %>
-                                        <% end %>
+                                                    </font>
+                                                </td>
+                                            </tr>
+                                            <tr class="spacer" style="height:5px"></tr>
                                         </tbody>
                                     </table>
-                                </div>
+                                
                             </div>
                         </td>
                     </tr>
@@ -127,7 +123,11 @@
                     }
                     return timestring;
                 }
-
+                
+                $http.get("https://hackernew.herokuapp.com/submissions.json").then(function(response) {
+                    $scope.submissions = response.data;
+                });
+                
                 //Get ID out of current URL
                 var submission_id = $location.search().id;
                 $scope.submissionId = submission_id;
@@ -179,7 +179,9 @@
                         $scope.comments = response.data;
                     });
                 });
+                
             }]);
+            
     </script>
 
 
