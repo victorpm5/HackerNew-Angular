@@ -17,22 +17,22 @@
                     <tbody>
                     <tr>
                         <td style="width:18px;padding-right:4px">
-                            <a style="text-decoration:none;" href="/"><img src="./img/y18.gif"></a>
+                            <a ng-href="./index.html?token={{token}}&userid={{userId}}" target="_self"><img src="./img/y18.gif"></a>
                         </td>
                         <td class="header">
-                            <font size="4"> <b><a style="text-decoration:none;" href="/">Hacker News</a></b></font>
+                            <font size="4"> <b><a target="_self" ng-href="./index.html?token={{token}}&userid={{userId}}">Hacker News</a></b></font>
                             <font size="3"> 
-                                <a style="text-decoration:none;" href="./index.html" target="_self">new</a> | 
-                                <a style="text-decoration:none;" href="./threads.html" target="_self">threads</a> |
-                                <a style="text-decoration:none;" href="./ask.html" target="_self">ask</a> | 
-                                <a style="text-decoration:none;" href="./new_submission.html" target="_self">submit</a>
+                                <a target="_self" ng-href="./index.html?token={{token}}&userid={{userId}}">new</a> |
+                                <a ng-href="./threads.html?token={{token}}&userid={{userId}}" target="_self">threads</a> | 
+                                <a ng-href="/ask.html?token={{token}}&userid={{userId}}" target="_self">ask</a> | 
+                                <a target="_self" ng-href="/submissions/new.html?token={{token}}&userid={{userId}}">submit</a>
                             </font>
                         </td>
                         <td>
                             <font size="3">
                                 <div align="right">
-                                    <a id="login" href="#" >Log in</a>
-                                    <a id="logout" href="#" >| Log out</a>
+                                    <a id="login" href="./index.html" target="_self" >Log in</a>
+                                    <a id="logout" href="./index.html" target="_self" >| Log out</a>
                                 </div>
                             </font>
                         </td>
@@ -87,7 +87,7 @@
             function ($scope, $location, $http, $window) {
                 
                 $scope.updateUser = function() {
-                    if ($scope.user_id) {
+                    if ($scope.my_user_id) {
                         var text = document.getElementById('update_user').value
                         $http.put('https://hackernew.herokuapp.com/users.json', {'about': text}, {headers: {'api_key': $scope.token, 'Content-type': 'application/json'}});
                         $window.location.reload();
@@ -110,10 +110,9 @@
 
                 if(my_user_id){
                     document.getElementById("login").href="./user_profile.html?userprofileid=" + user_id + "&token=" + token_id + "&userid=" + my_user_id;
-                    
                     document.getElementById("login").textContent = "usuari";
                     document.getElementById("logout").style.display = "inline";
-                    document.getElementById("logout").href="/";
+                    document.getElementById("logout").href="./index.html";
                     $http.get("https://hackernew.herokuapp.com/users/"+my_user_id+".json")
                             .then(function(response) {
                                 document.getElementById("login").textContent = response.data.name;
