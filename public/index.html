@@ -15,22 +15,22 @@
                                 <tbody>
                                     <tr>
                                         <td style="width:18px;padding-right:4px">
-                                            <a style="text-decoration:none;" href="/"><img src="./img/y18.gif"></a>
+                                            <a style="text-decoration:none;" href="./index.html" target="_self"><img src="./img/y18.gif"></a>
                                         </td>
                                         <td class="header">
-                                            <font size="4"> <b><a style="text-decoration:none;" href="/">Hacker News</a></b></font>
+                                            <font size="4"> <b><a style="text-decoration:none;" href="./index.html" target="_self">Hacker News</a></b></font>
                                             <font size="3">
-                                                <a style="text-decoration:none;" href="./index.html"><font color="white">new</font></a> |
-                                                <a style="text-decoration:none;" href="./threads.html">threads</a> |
-                                                <a style="text-decoration:none;" href="./ask.html">ask</a> | 
-                                                <a style="text-decoration:none;" href="/submissions/new">submit</a>
+                                                <a style="text-decoration:none;" href="./index.html" target="_self"><font color="white">new</font></a> |
+                                                <a style="text-decoration:none;" href="./threads.html" target="_self">threads</a> |
+                                                <a style="text-decoration:none;" href="./ask.html" target="_self">ask</a> | 
+                                                <a style="text-decoration:none;" href="/submissions/new" target="_self">submit</a>
                                             </font>
                                         </td>
                                         <td>
                                             <font size="3">
                                                 <div align="right">
-                                                    <a id="login" href="#" >Log in</a>
-                                                    <a id="logout" href="#" >| Log out</a>
+                                                    <a id="login" href="./index.html" target="_self" >Log in</a>
+                                                    <a id="logout" href="./index.html" target="_self" >| Log out</a>
                                                 </div>
                                             </font>
                                         </td>
@@ -59,11 +59,11 @@
                                         <tr>
                                             <td>
                                                 <font color="grey" size="2">
-                                                    0 points by <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}">{{ submission.user_id }}</a>
+                                                    0 points by <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}" target="_self">{{ submission.user_id }}</a>
                                                     |
                                                     {{ agoFunction(submission.created_at); }}
                                                     |
-                                                    <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}">0</a> comments
+                                                    <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}" target="_self">0</a> comments
 
                                                 </font>
                                             </td>
@@ -118,7 +118,7 @@
                     document.getElementById("login").href="/users/" + user_id;
                     document.getElementById("login").textContent = "usuari";
                     document.getElementById("logout").style.display = "inline";
-                    document.getElementById("logout").href="/";
+                    document.getElementById("logout").href="./index.html";
                     $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
                             .then(function(response) {
                                 document.getElementById("login").textContent = response.data.name;
