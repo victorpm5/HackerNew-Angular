@@ -4,7 +4,7 @@
 <div ng-app="user_app" ng-controller="user_ctrl">
 
 <head>
-  <title>Profile: <%= @user.name %> | Hacker News</title>
+  <title>Profile: {{ user.name }} | Hacker News</title>
 </head>
 
 <body>
@@ -49,7 +49,7 @@
                 <div style="margin-left:20px">
                   <p>
                     <strong>Name:</strong>
-                    <%= {{ user.name }} %>
+                        {{ name }}
                   </p>
                   
                   <p>
@@ -115,20 +115,6 @@
 
         app.controller('user_ctrl', ['$scope', '$location', '$http',
             function ($scope, $location, $http) {
-                $scope.agoFunction = function(date)  {
-                    var time = (new Date().getTime() - new Date(date).getTime());
-                    var timestring = "";
-                    if (time < 3600*1000) {
-                        timestring = Math.round(time/(60*1000)) + " minutes ago";
-                    }
-                    if (time >= 3600*1000 && time < 3600*1000*24) {
-                        timestring = Math.round(time/(3600*1000)) + " hours ago";
-                    }
-                    if (time >= 3600*1000*24) {
-                        timestring = Math.round(time/(3600*24*1000)) + " days ago";
-                    }
-                    return timestring;
-                }
 
                 //Get ID out of current URL
                 var submission_id = $location.search().id;
@@ -156,30 +142,9 @@
                     document.getElementById("logout").style.display = "none";
                 }
 
-            document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
-                $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json").then(function(response) {
-                    $scope.submissionTitle = response.data.title;
-                    $scope.submissionText = response.data.text;
-                    $scope.submissionUrl = response.data.url;
-                    $scope.submissionText = response.data.text;
-                    $scope.timeString = $scope.agoFunction(response.data.created_at);
-                    $http.get(response.data._links.user.href).then(function(response) {
-                        $scope.submitter = response.data.name;
-                        $scope.submissionUserUrl = "./user.html?username="+response.data.name;
-                    });
-                    $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+"/comments.json").then(function(response) {
-                        $scope.numberOfComments = response.data.length;
-                        response.data.forEach(function(comment) {
-                            $http.get(comment._links.user.href).then(function(response) {
-                                comment.username = response.data.name;
-                            });
-                            $http.get("https://hackernew.herokuapp.com/comments/"+comment.id+"/replies.json").then(function(response) {
-                                comment.replies = response.data;
-                            });
-                            comment.ago = $scope.agoFunction(comment.created_at);
-                        });
-                        $scope.comments = response.data;
-                    });
+            document.getElementById('user_form').action = "/users/"+user_id;
+                $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json").then(function(response) {
+                    $scope.name = response.data.name;
                 });
             }]);
     </script>
