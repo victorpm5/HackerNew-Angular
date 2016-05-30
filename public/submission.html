@@ -47,22 +47,9 @@
         <tr>
             <td>
                 <div style="color:grey;margin-left:10px">
-                    <% if current_user != nil && current_user.id != @submission.user.id %>
-                        <form action="tobereplaced" method="POST"
-                              id="upvote_submission_form">
-                            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-                            <% if current_user && !current_user.voted_for?(@submission) %>
-                            <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
-                            <input type="image" name="submit_vote" src="./img/grayarrow.gif">
-                            <% elsif !current_user %>
-                            <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                            <% end %>
-                        </form>
-                    <% elsif current_user != nil %>
-                        <font color="orange" size="3">*</font>
-                    <% else %>
-                        <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                    <% end %>
+                    <div id="vote_submission">
+                        <img id="img_vote_sub" type="image" src="./img/grayarrow.gif" ng-click="postVoteToSubmission()"> </img>
+                    </div>
                     <a ng-href="{{ submissionUrl }}">
                         {{ submissionTitle }}
                     </a>
@@ -98,22 +85,9 @@
                     <table>
                         <tr>
                             <td>
-                        <% if current_user != nil && current_user.id != comentari.user.id %>
-                            <form action="/comments/<%= comentari.id %>/vote" method="POST"
-                              id="upvote_comment_form">
-                                <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-                                <% if current_user && !current_user.voted_for?(comentari) %>
-                                <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
-                                <input type="image" name="submit_vote" src="./img/grayarrow.gif">
-                                <% elsif !current_user %>
-                                <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                                <% end %>
-                            </form>
-                        <% elsif current_user != nil %>
-                            <font color="orange" size="3">*</font>
-                        <% else %>
-                            <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                        <% end %>
+                            <div>
+                                <img type="image" src="./img/grayarrow.gif" ng-click="postVoteToComment(comment.id)"> </img>
+                            </div>
                         </td>
                             <td><a ng-href="/users/{{comment.user_id}}">{{ comment.username }}</a>
                             
@@ -132,26 +106,13 @@
                         <table>
                             <tr>
                                 <td>
-                                <% if current_user != nil && current_user.id != reply.user.id %>
-                                    <form action="/replies/<%= reply.id %>/vote" method="POST"
-                                      id="upvote_reply_form">
-                                        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-                                        <% if current_user && !current_user.voted_for?(reply) %>
-                                        <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
-                                        <input type="image" name="submit_vote" src="./img/grayarrow.gif">
-                                        <% elsif !current_user %>
-                                        <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                                        <% end %>
-                                    </form>
-                                <% elsif current_user != nil %>
-                                    <font color="orange" size="3">*</font>
-                                <% else %>
-                                    <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                                <% end %>
+                                <div id="vote_submission">
+                                    <img id="img_vote_sub" type="image" src="./img/grayarrow.gif" ng-click="postVoteToReply(reply.id)"> </img>
+                                </div>
                                 </td>
                                 <td><a ng-href="/users/{{ reply.user_id }}"> {{ reply.username }}</a>
     
-                                    $scope.agoFunction(reply.created_at);
+                                    {{ agoFunction(reply.created_at) }}
                                     
                             </tr>
                             </table><table>
@@ -208,6 +169,23 @@
                 }
                 return timestring;
           }
+          
+          $scope.postVoteToSubmission = function() {
+              var submission_id = $location.search().id;
+              $http.post("https://hackernew.herokuapp.com/submissions/"+submission_id+"/vote.json").then(function(response) {
+                  alert("done");
+              });
+          }
+          $scope.postVoteToComment = function(comment_id) {
+              $http.post("https://hackernew.herokuapp.com/comments/"+comment_id+"/vote.json").then(function(response) {
+                  alert("done");
+              });
+          }
+          $scope.postVoteToReply = function(reply_id) {
+              $http.post("https://hackernew.herokuapp.com/replies/"+submission_id+"/vote.json").then(function(response) {
+                  alert("done");
+              });
+          }
            
           //Get ID out of current URL
           var submission_id = $location.search().id;
@@ -234,8 +212,7 @@
               document.getElementById("login").textContent = "login";
               document.getElementById("logout").style.display = "none";
           }
-          
-          document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
+         
           $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json")
             .then(function(response) {
                 $scope.submissionTitle = response.data.title;
@@ -255,6 +232,11 @@
                         });
                         $http.get("https://hackernew.herokuapp.com/comments/"+comment.id+"/replies.json").then(function(response) {
                             comment.replies = response.data;
+                            comment.replies.forEach(function(reply) {
+                                $http.get(reply._links.user.href).then(function(response) {
+                                    reply.username = response.data.name;
+                                });
+                            });
                         });
                         comment.ago = $scope.agoFunction(comment.created_at);
                     });
