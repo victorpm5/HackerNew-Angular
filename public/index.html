@@ -63,7 +63,7 @@
                                                     |
                                                     {{ agoFunction(submission.created_at); }}
                                                     |
-                                                    <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}" target="_self">0</a> comments
+                                                    <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}" target="_self">{{ submission.comments.length }}</a> comments
 
                                                 </font>
                                             </td>
@@ -111,7 +111,7 @@
                 $scope.index = 0;
                 $scope.getIndex = function() {
                     ++$scope.index;
-                    return $scope.index - 6049;
+                    return $scope.index;
                 };
                 
                 var token_id = $location.search().token;
@@ -141,6 +141,9 @@
                     $scope.submissions.forEach(function(submission) {
                         $http.get(submission._links.user.href).then(function(response) {
                             submission.username = response.data.name;
+                        });
+                        $http.get("https://hackernew.herokuapp.com/submissions/" + submission.id + "/comments.json").then(function(response) {
+                            submission.comments = response.data;
                         });
                     });
                 });

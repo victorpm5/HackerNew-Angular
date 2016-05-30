@@ -3,7 +3,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
 <div ng-app="submission_app" ng-controller="submission_ctrl">
     <head>
-        <title>Hacker News | Ask</title>
+        <title>Hacker News</title>
     </head>
     <body>
         <center>
@@ -20,9 +20,9 @@
                                         <td class="header">
                                             <font size="4"> <b><a style="text-decoration:none;" href="./index.html" target="_self">Hacker News</a></b></font>
                                             <font size="3">
-                                                <a style="text-decoration:none;" href="./index.html" target="_self">new</a> |
+                                                <a style="text-decoration:none;" href="./index.html" target="_self"><font color="white">new</font></a> |
                                                 <a style="text-decoration:none;" href="./threads.html" target="_self">threads</a> |
-                                                <a style="text-decoration:none;" href="./ask.html" target="_self"><font color="white">ask</font></a> | 
+                                                <a style="text-decoration:none;" href="./ask.html" target="_self">ask</a> | 
                                                 <a style="text-decoration:none;" href="/submissions/new" target="_self">submit</a>
                                             </font>
                                         </td>
@@ -58,11 +58,11 @@
                                         <tr>
                                             <td>
                                                 <font color="grey" size="2">
-                                                    0 points by <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}" target="_self">{{ submission.user_id }}</a>
+                                                    0 points by <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}" target="_self">{{ submission.username }}</a>
                                                     |
                                                     {{ agoFunction(submission.created_at); }}
                                                     |
-                                                    <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}" target="_self">0</a> comments
+                                                    <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}" target="_self">{{ submission.comments.length }}</a> comments
 
                                                 </font>
                                             </td>
@@ -106,13 +106,13 @@
                 };
                 
                 //Get ID out of current URL
-    
+                
                 $scope.index = 0;
                 $scope.getIndex = function() {
                     ++$scope.index;
-                    return $scope.index - 70;
+                    return $scope.index;
                 };
-    
+                
                 var token_id = $location.search().token;
                 $scope.token = token_id;
     
@@ -137,17 +137,18 @@
     
                 $http.get("https://hackernew.herokuapp.com/ask.json").then(function(response) {
                     $scope.submissions = response.data;
+                    $scope.submissions.forEach(function(submission) {
+                        $http.get(submission._links.user.href).then(function(response) {
+                            submission.username = response.data.name;
+                        });
+                        $http.get("https://hackernew.herokuapp.com/submissions/" + submission.id + "/comments.json").then(function(response) {
+                            submission.comments = response.data;
+                        });
+                    });
                 });
                 
-                $scope.numberOfCommentsFunction = function(submission_id) {
-                    $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+"/comments.json").then(function(response) {
-                        $scope.numberOfComments = response.data.length;
-                    });
-                    return $scope.numberOfComments;
-                };
-                
                 $scope.userUrl = function(user_id) {
-                    return "./user_profile.html?userprofileid=" + user_id;
+                    return "././user_profile.html?userprofileid=" + user_id;
                 };
                 
                 $scope.submissionUrl = function(submission_id) {
