@@ -3,7 +3,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
 <div ng-app="submission_app" ng-controller="submission_ctrl">
     <head>
-        <title> {{ user_name }}'s submissions | Hacker News</title>
+        <title> {{ user_name }}'s comments | Hacker News</title>
     </head>
     <body>
         <center>
@@ -24,7 +24,7 @@
                                                 <a ng-href="./threads.html?token={{token}}&userid={{userId}}" target="_self">threads</a> | 
                                                 <a ng-href="./ask.html?token={{token}}&userid={{userId}}" target="_self">ask</a> | 
                                                 <a target="_self" ng-href="./submissions/new.html?token={{token}}&userid={{userId}}">submit</a> | 
-                                                <font color="white">{{ user_name }}'s submissions</font>
+                                                <font color="white">{{ user_name }}'s comments</font>
                                             </font>
                                         </td>
                                         <td>

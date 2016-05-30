@@ -24,8 +24,8 @@
                             <font size="3"> 
                                 <a target="_self" ng-href="./index.html?token={{token}}&userid={{userId}}">new</a> |
                                 <a ng-href="./threads.html?token={{token}}&userid={{userId}}" target="_self">threads</a> | 
-                                <a ng-href="/ask.html?token={{token}}&userid={{userId}}" target="_self">ask</a> | 
-                                <a target="_self" ng-href="/submissions/new.html?token={{token}}&userid={{userId}}">submit</a>
+                                <a ng-href="./ask.html?token={{token}}&userid={{userId}}" target="_self">ask</a> | 
+                                <a target="_self" ng-href="./submissions/new.html?token={{token}}&userid={{userId}}">submit</a>
                             </font>
                         </td>
                         <td>
@@ -156,9 +156,16 @@
                     $scope.user_email = response.data.email;
                     $scope.user_oauth_token = response.data.oauth_token;
                     
-                    $scope.editUrl = "./user_edit.html?userprofileid="+response.data.id+"&token="+response.data.oauth_token+"&userid="+my_user_id;
-                    $scope.commentsUrl = "./user_comments.html?userprofileid="+response.data.id+"&token="+response.data.oauth_token+"&userid="+my_user_id;
-                    $scope.submissionsUrl = "./user_submissions.html?userprofileid="+response.data.id+"&token="+response.data.oauth_token+"&userid="+my_user_id;
+                    if (token_id){
+                        $scope.editUrl = "./user_edit.html?userprofileid="+response.data.id+"&token="+token_id+"&userid="+my_user_id;
+                        $scope.commentsUrl = "./threads.html?token="+token_id+"&userid="+my_user_id;
+                        $scope.submissionsUrl = "./user_submissions.html?userprofileid="+response.data.id+"&token="+token_id+"&userid="+my_user_id;
+                    }
+                    else {
+                        $scope.editUrl = "./user_edit.html?userprofileid="+response.data.id+"&token=&userid=";
+                        $scope.commentsUrl = "./user_comments.html?userprofileid="+response.data.id+"&token=&userid=";
+                        $scope.submissionsUrl = "./user_submissions.html?userprofileid="+response.data.id+"&token=&userid=";
+                    }
                 });
             }]);
     </script>
