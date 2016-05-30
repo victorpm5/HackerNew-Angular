@@ -76,20 +76,24 @@
                     {{ user_about }}
                   </p>
                   
-                  <% if current_user && current_user.id == @user.id %>
-                    <%= link_to 'Edit', edit_user_path(@user) %>
+                  <div ng-if="my_user_id != null && my_user_id == user_id ">
+                    <a ng-href="{{ editUrl }}">
+                    Edit</a>
                     <strong> | </strong>
-                  <% end %>
+                    <a ng-href="{{ commentsUrl }}">
+                    My comments</a>
+                    <strong> | </strong>
+                    <a ng-href="{{ submissionsUrl }}">
+                    My submissions</a>
+                  </div>
                   
-                  <% if current_user && current_user.name == @user.name %>
-                  <%= link_to 'My comments', threads_path() %>
-                  <strong> | </strong>
-                  <%= link_to 'My submissions', user_submissions_path(:user => @user.id) %>
-                  <% else %>
-                  <%= link_to 'Comments', user_comments_path(:user => @user.id) %>
-                  <strong> | </strong>
-                  <%= link_to 'Submissions', user_submissions_path(:user => @user.id) %>
-                  <% end %>
+                  <div ng-if="user_id != null && my_user_id != user_id ">
+                    <a ng-href="{{ commentsUrl }}">
+                    Comments</a>
+                    <strong> | </strong>
+                    <a ng-href="{{ submissionsUrl }}">
+                    Submissions</a>
+                  </div>
                   
                 </div>
                 <tr class="spacer" style="height:20px"></tr>
@@ -150,6 +154,10 @@
                     $scope.user_about = response.data.about;
                     $scope.user_email = response.data.email;
                     $scope.user_oauth_token = response.data.oauth_token;
+                    
+                    $scope.editUrl = "./user_edit.html?userprofileid="+response.data.id;
+                    $scope.commentsUrl = "./user_comments.html?userprofileid="+response.data.id;
+                    $scope.submissionsUrl = "./user_submissions.html?userprofileid="+response.data.id;
                 });
             }]);
     </script>
