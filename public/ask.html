@@ -48,7 +48,7 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <font color="grey" size="3">1.</font>
+                                                <font color="grey" size="3">{{ getIndex(); }}.</font>
                                                 <input type="image" name="submit_vote" src="./img/grayarrow.gif">
                                                 <font color="black" size="3">
                                                     <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}" target="_self" >{{ submission.title }}</a>
@@ -106,6 +106,12 @@
                 };
                 
                 //Get ID out of current URL
+    
+                $scope.index = 0;
+                $scope.getIndex = function() {
+                    ++$scope.index;
+                    return $scope.index - 70;
+                };
     
                 var token_id = $location.search().token;
                 $scope.token = token_id;
