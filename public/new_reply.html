@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<div ng-app="new_reply_app" ng-controller="new_reply_ctrl">
+<head>
+    <title>Hacker News</title>
+</head>
+
+<body>
+<center>
+    <table bgcolor="#f6f6ef" border="0" cellpadding="0" cellspacing="0" width="85%">
+        <tbody>
+        <tr>
+            <td bgcolor="ff6600">
+                <table style="padding:2px" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td style="width:18px;padding-right:4px">
+                            <a style="text-decoration:none;" href="/"><img src="./img/y18.gif"></a>
+                        </td>
+                        <td class="header">
+                            <font size="4"> <b><a style="text-decoration:none;" href="/">Hacker News</a></b></font>
+                            <font size="3"> 
+                                <a style="text-decoration:none;" href="/">new</a> | 
+                                <a style="text-decoration:none;" href="/threads">threads</a> |
+                                <a style="text-decoration:none;" href="/ask">ask</a> | 
+                                <a style="text-decoration:none;" href="/submissions/new">submit</a>
+                            </font>
+                        </td>
+                        <td>
+                            <font size="3">
+                                <a id="login" href="#" >Log in</a>
+                                <a id="logout" href="#" >| Log out</a>
+                            </font>
+                        </td>
+                        <td class="spacer" style="width:10px"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr style="height:10px"></tr>
+        <tr>
+          <td>
+            <div style="color:grey;margin-left:10px">
+                <a style="text-decoration:none;" ng-href="/users/{{ comment.user_id }}">{{ comment.username }}</a>
+                
+                {{ agoFunction(comment.created_at) }}
+            
+            </div>
+
+            <div style="margin-left:20px">
+                
+                {{ comment.content }}
+                
+                <form id="comment_content_form" novalidate class="simple-form" ng-submit="submitReply()">
+                    <textarea id="new_reply" value="" form="comment_content_form"
+                              style="min-width:500px;min-height:100px"></textarea>
+                    <input type="submit" value="add reply" />
+                </form>
+            </div>
+            
+            <br>
+            <br>
+          </td>
+        </tr>
+    </table>
+  </center>
+  <script>
+    var app = angular.module("new_reply_app", ["ngRoute"]);
+    
+    app.config(function($locationProvider) {
+        $locationProvider.html5Mode({
+          enabled: true,
+          requireBase: false
+        }).hashPrefix('!');
+    });
+
+    app.controller('new_reply_ctrl', ['$scope', '$location', '$http', '$window',
+       function ($scope, $location, $http, $window) {
+            $scope.submitReply = function() {
+                if ($scope.userId) {
+                    var text = document.getElementById('new_reply').value
+                    $http.post('https://hackernew.herokuapp.com/replies.json', {'comment_id': $scope.commentId, 'content': text}, {headers: {'api_key': $scope.token, 'Content-type': 'application/json'}}).then(function(response){
+                        window.location.href = "./submission.html?id="+$scope.comment.submission_id;
+                    });
+                }
+                else {
+                    alert("Not authenticated.");
+                }
+            };
+            
+            $scope.agoFunction = function(date)  {
+                var time = (new Date().getTime() - new Date(date).getTime());
+                var timestring = "";
+                if (time < 3600*1000) {
+                    timestring = Math.round(time/(60*1000)) + " minutes ago";
+                }
+                if (time >= 3600*1000 && time < 3600*1000*24) {
+                    timestring = Math.round(time/(3600*1000)) + " hours ago";
+                }
+                if (time >= 3600*1000*24) {
+                    timestring = Math.round(time/(3600*24*1000)) + " days ago";
+                }
+                return timestring;
+          }
+           
+          //Get ID out of current URL
+          var comment_id = $location.search().commentId;
+          $scope.commentId = comment_id;
+          
+          var token_id = $location.search().token;
+          $scope.token = token_id;
+          
+          var user_id = $location.search().userid;
+          $scope.userId = user_id;
+          
+          if(user_id){
+              document.getElementById("login").href="/users/" + user_id;
+              document.getElementById('login').target="_self";
+              document.getElementById("login").textContent = "usuari";
+              document.getElementById("logout").style.display = "inline";
+              document.getElementById("logout").href="/";
+              document.getElementById("logout").target="_self";
+             $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
+              .then(function(response) {
+                    document.getElementById("login").textContent = response.data.name;
+             });
+          }
+          else{
+              document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL;
+              document.getElementById("login").target="_self";
+              document.getElementById("login").textContent = "login";
+              document.getElementById("logout").style.display = "none";
+          }
+          
+          $http.get("https://hackernew.herokuapp.com/comments/"+comment_id+".json").then(function(response) {
+                $scope.comment = response.data;
+                $http.get(response.data._links.user.href).then(function(response) {
+                    $scope.comment.username = response.data.name;
+                });
+          });
+    }]);
+</script>
+</body>
