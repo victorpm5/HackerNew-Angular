@@ -58,11 +58,11 @@
                                         <tr>
                                             <td>
                                                 <font color="grey" size="2">
-                                                    0 points by <a style="text-decoration:none;" href="/users/{{submission.user_id}}">{{ submission.username }}</a>
-
+                                                    0 points by <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}">{{ submission.user_id }}</a>
+                                                    |
                                                     {{ agoFunction(submission.created_at); }}
-
-                                                    <a style="text-decoration:none;" href="/">0</a> comments
+                                                    |
+                                                    <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}">0</a> comments
 
                                                 </font>
                                             </td>
@@ -132,6 +132,18 @@
                 $http.get("https://hackernew.herokuapp.com/submissions.json").then(function(response) {
                     $scope.submissions = response.data;
                 });
+                
+                $scope.numberOfCommentsFunction = function(submission_id) {
+                    $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+"/comments.json").then(function(response) {
+                        $scope.numberOfComments = response.data.length;
+                    });
+                    return $scope.numberOfComments;
+                };
+                
+                $scope.userUrl = function(user_id) {
+                    return "././user_profile.html?userprofileid=" + user_id;
+                };
+                
             }]);
             
     </script>
