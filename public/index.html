@@ -59,7 +59,7 @@
                                         <tr>
                                             <td>
                                                 <font color="grey" size="2">
-                                                    0 points by <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}" target="_self">{{ submission.user_id }}</a>
+                                                    0 points by <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}" target="_self">{{ submission.username }}</a>
                                                     |
                                                     {{ agoFunction(submission.created_at); }}
                                                     |
@@ -111,7 +111,7 @@
                 $scope.index = 0;
                 $scope.getIndex = function() {
                     ++$scope.index;
-                    return $scope.index - 230;
+                    return $scope.index - 6049;
                 };
                 
                 var token_id = $location.search().token;
@@ -138,6 +138,11 @@
     
                 $http.get("https://hackernew.herokuapp.com/submissions.json").then(function(response) {
                     $scope.submissions = response.data;
+                    $scope.submissions.forEach(function(submission) {
+                        $http.get(submission._links.user.href).then(function(response) {
+                            submission.username = response.data.name;
+                        });
+                    });
                 });
                 
                 $scope.userUrl = function(user_id) {
