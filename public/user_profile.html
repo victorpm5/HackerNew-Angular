@@ -4,7 +4,7 @@
 <div ng-app="user_app" ng-controller="user_ctrl">
 
 <head>
-  <title>Profile: {{ user.name }} | Hacker News</title>
+  <title>Profile: {{ user_name }} | Hacker News</title>
 </head>
 
 <body>
@@ -49,31 +49,31 @@
                 <div style="margin-left:20px">
                   <p>
                     <strong>Name:</strong>
-                        {{ name }}
+                        {{ user_name }}
                   </p>
                   
                   <p>
                     <strong>Created at:</strong>
-                    <%= {{ user.created_at }} %>
+                        {{ user_created_at }}
                   </p>
                   
-                  <div ng-if="current_user && current_user.id == {{user.id}}">
+                  <div ng-if="my_user_id != null && my_user_id == user_id ">
                   
                     <p>
                       <strong>Email:</strong>
-                      <%= {{ user.email }} %>
+                          {{ user_email }}
                     </p>
                     
                     <p>
                       <strong>Personal Api Key:</strong>
-                      <%= {{ user.oauth_token }} %>
+                          {{ user_oauth_token }}
                     </p>
                   
                   </div>
                   
                   <p>
                     <strong>About:</strong>
-                    <%= {{ user.about }} %>
+                    {{ user_about }}
                   </p>
                   
                   <% if current_user && current_user.id == @user.id %>
@@ -117,21 +117,22 @@
             function ($scope, $location, $http) {
 
                 //Get ID out of current URL
-                var submission_id = $location.search().id;
-                $scope.submissionId = submission_id;
 
                 var token_id = $location.search().token;
                 $scope.token = token_id;
 
-                var user_id = $location.search().userid;
-                $scope.userId = user_id;
+                var my_user_id = $location.search().userid;
+                $scope.my_user_id = my_user_id;
+                
+                var user_id = $location.search().userprofileid;
+                $scope.user_id = user_id;
 
-                if(user_id){
-                    document.getElementById("login").href="/users/" + user_id;
+                if(my_user_id){
+                    document.getElementById("login").href="/users/" + my_user_id;
                     document.getElementById("login").textContent = "usuari";
                     document.getElementById("logout").style.display = "inline";
                     document.getElementById("logout").href="/";
-                    $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
+                    $http.get("https://hackernew.herokuapp.com/users/"+my_user_id+".json")
                             .then(function(response) {
                                 document.getElementById("login").textContent = response.data.name;
                             });
@@ -142,9 +143,13 @@
                     document.getElementById("logout").style.display = "none";
                 }
 
-            document.getElementById('user_form').action = "/users/"+user_id;
                 $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json").then(function(response) {
-                    $scope.name = response.data.name;
+                    $scope.user_id = response.data.id;
+                    $scope.user_name = response.data.name;
+                    $scope.user_created_at = response.data.created_at;
+                    $scope.user_about = response.data.about;
+                    $scope.user_email = response.data.email;
+                    $scope.user_oauth_token = response.data.oauth_token;
                 });
             }]);
     </script>
