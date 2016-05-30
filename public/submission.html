@@ -199,7 +199,7 @@
           $scope.userId = user_id;
           
           if(user_id){
-              document.getElementById("login").href="./user_profile.html?token={{token}}&userid={{userId}}&userprofileid={{userId}}"
+              document.getElementById("login").href="./user_profile.html?token="+$scope.token+"&userid="+$scope.userId+"&userprofileid="+$scope.userId
               document.getElementById('login').target="_self";
               document.getElementById("login").textContent = "usuari";
               document.getElementById("logout").style.display = "inline";
