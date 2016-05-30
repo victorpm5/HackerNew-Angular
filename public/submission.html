@@ -100,7 +100,7 @@
                             <td style="color:grey;"> {{ comment.content }}</td>
                         </tr>
                     </table>
-                    <a target="_self" ng-href="/comments/{{comment.id}}/new_reply">reply</a>
+                    <a target="_self" ng-href="./new_reply.html?commentId={{comment.id}}&userid={{userId}}&token={{token}}">reply</a>
                     
                     <div style="color:grey;margin-left:25px" ng-repeat="reply in comment.replies">
                         <table>
