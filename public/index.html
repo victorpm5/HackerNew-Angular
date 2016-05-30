@@ -140,19 +140,12 @@
                     $scope.submissions = response.data;
                 });
                 
-                $scope.numberOfCommentsFunction = function(submission_id) {
-                    $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+"/comments.json").then(function(response) {
-                        $scope.numberOfComments = response.data.length;
-                    });
-                    return $scope.numberOfComments;
-                };
-                
                 $scope.userUrl = function(user_id) {
                     return "././user_profile.html?userprofileid=" + user_id;
                 };
                 
                 $scope.submissionUrl = function(submission_id) {
-                    return "./submission.html?submissionId=" + submission_id;
+                    return "./submission.html?id=" + submission_id;
                 };
                 
             }]);
