@@ -20,9 +20,10 @@
                                         <td class="header">
                                             <font size="4"> <b><a style="text-decoration:none;" href="/">Hacker News</a></b></font>
                                             <font size="3">
-                                                <a style="text-decoration:none;" href="/"><font color="white">new</font></a> |
-                                                <a style="text-decoration:none;" href="/threads">threads</a> |
-                                                <a style="text-decoration:none;" href="/ask">ask</a> | <a style="text-decoration:none;" href="/submissions/new">submit</a>
+                                                <a style="text-decoration:none;" href="./index.html"><font color="white">new</font></a> |
+                                                <a style="text-decoration:none;" href="./threads.html">threads</a> |
+                                                <a style="text-decoration:none;" href="./ask.html">ask</a> | 
+                                                <a style="text-decoration:none;" href="/submissions/new">submit</a>
                                             </font>
                                         </td>
                                         <td>
@@ -62,7 +63,7 @@
                                                     |
                                                     {{ agoFunction(submission.created_at); }}
                                                     |
-                                                    <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}">0</a> comments
+                                                    <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}">0</a> comments
 
                                                 </font>
                                             </td>
@@ -142,6 +143,10 @@
                 
                 $scope.userUrl = function(user_id) {
                     return "././user_profile.html?userprofileid=" + user_id;
+                };
+                
+                $scope.submissionUrl = function(submission_id) {
+                    return "./submission.html?submissionId=" + submission_id;
                 };
                 
             }]);
