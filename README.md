@@ -7,4 +7,4 @@ Integrants de l'equip:
 * [Víctor Pérez](https://github.com/victorpm5)
 * [Albert Suàrez](https://github.com/AlbertSuarez)
 
-####[Heroku link](http://hackernews-angularjs.herokuapp.com/)
+####[Link a la pàgina amb l'aplicació Angular](http://victorpm5.github.io/HackerNew-Angular/)
