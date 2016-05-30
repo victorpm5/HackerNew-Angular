@@ -173,17 +173,17 @@
           $scope.postVoteToSubmission = function() {
               var submission_id = $location.search().id;
               $http.post("https://hackernew.herokuapp.com/submissions/"+submission_id+"/vote.json").then(function(response) {
-                  alert("done");
+                  
               });
           }
           $scope.postVoteToComment = function(comment_id) {
               $http.post("https://hackernew.herokuapp.com/comments/"+comment_id+"/vote.json").then(function(response) {
-                  alert("done");
+                  
               });
           }
           $scope.postVoteToReply = function(reply_id) {
               $http.post("https://hackernew.herokuapp.com/replies/"+submission_id+"/vote.json").then(function(response) {
-                  alert("done");
+                  
               });
           }
            
