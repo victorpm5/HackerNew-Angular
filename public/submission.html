@@ -19,14 +19,14 @@
                     <tbody>
                     <tr>
                         <td style="width:18px;padding-right:4px">
-                            <a href="./" target="_self"><img src="./img/y18.gif"></a>
+                            <a ng-href="./index.html?token={{token}}&userid={{userId}}" target="_self"><img src="./img/y18.gif"></a>
                         </td>
                         <td class="header">
-                            <font size="4"> <b><a href="/">Hacker News</a></b></font>
+                            <font size="4"> <b><a href="./index.html?token={{token}}&userid={{userId}}">Hacker News</a></b></font>
                             <font size="3"> 
-                                <a href="./" target="_self">new</a> | 
-                                <a href="./threads.html" target="_self">threads</a> | 
-                                <a href="/ask.html" target="_self">ask</a> | <a target="_self" href="/submissions/new">submit</a>
+                                <a href="./index.html?token={{token}}&userid={{userId}}" target="_self">new</a> | 
+                                <a href="./threads.html?token={{token}}&userid={{userId}}" target="_self">threads</a> | 
+                                <a href="/ask.html?token={{token}}&userid={{userId}}" target="_self">ask</a> | <a target="_self" href="/submissions/new.html?token={{token}}&userid={{userId}}">submit</a>
                             </font>
                         </td>
                         <td>
@@ -54,7 +54,7 @@
                         {{ submissionTitle }}
                     </a>
                     <br>
-                    submitted by <a target="_self" ng-href="{{ submissionUserUrl }}">
+                    submitted by <a target="_self" ng-href="./user_profile.html?token={{token}}&userid={{userId}}&userprofileid={{ submissionUserId }}">
                     {{ submitter }}</a>
                     
                     {{ timeString }}
@@ -89,7 +89,7 @@
                                 <img type="image" src="./img/grayarrow.gif" ng-click="postVoteToComment(comment.id)"> </img>
                             </div>
                         </td>
-                            <td><a target="_self" ng-href="/users/{{comment.user_id}}">{{ comment.username }}</a>
+                            <td><a target="_self" ng-href="./user_profile.html?token={{token}}&userid={{userId}}&userprofileid={{comment.user_id}}">{{ comment.username }}</a>
                             
                             {{ comment.ago }}
                             
@@ -110,7 +110,7 @@
                                     <img id="img_vote_sub" type="image" src="./img/grayarrow.gif" ng-click="postVoteToReply(reply.id)"> </img>
                                 </div>
                                 </td>
-                                <td><a target="_self" ng-href="/users/{{ reply.user_id }}"> {{ reply.username }}</a>
+                                <td><a target="_self" ng-href="./user_profile.html?token={{token}}&userid={{userId}}&userprofileid={{ reply.user_id }}"> {{ reply.username }}</a>
     
                                     {{ agoFunction(reply.created_at) }}
                                     
@@ -198,7 +198,7 @@
           $scope.userId = user_id;
           
           if(user_id){
-              document.getElementById("login").href="/users/" + user_id;
+              document.getElementById("login").href="./user_profile.html?token={{token}}&userid={{userId}}&userprofileid={{userId}}"
               document.getElementById('login').target="_self";
               document.getElementById("login").textContent = "usuari";
               document.getElementById("logout").style.display = "inline";
@@ -223,6 +223,7 @@
                 $scope.submissionUrl = response.data.url;
                 $scope.submissionText = response.data.text;
                 $scope.timeString = $scope.agoFunction(response.data.created_at);
+                $scope.submissionUserId = response.data.user_id;
                 $http.get(response.data._links.user.href).then(function(response) {
                     $scope.submitter = response.data.name;
                     $scope.submissionUserUrl = "./user.html?username="+response.data.name;
