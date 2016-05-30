@@ -120,7 +120,7 @@
                 $scope.userId = user_id;
     
                 if(user_id){
-                    document.getElementById("login").href="/users/" + user_id;
+                    document.getElementById("login").href="./user_profile.html?userprofileid=" + user_id + "&token=" + token_id + "&userid=" + user_id;
                     document.getElementById("login").textContent = "usuari";
                     document.getElementById("logout").style.display = "inline";
                     document.getElementById("logout").href="./index.html";
