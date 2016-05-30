@@ -83,16 +83,15 @@
                 
                 
                 <div style="margin-left:20px">
-                    <form id="comment_content_form" novalidate class="simple-form">
-                        <textarea id="new_comment_content" value="" form="comment_content_form"
+                    <form id="comment_content_form" novalidate class="simple-form" ng-submit="submitComment()">
+                        <textarea id="new_comment" value="" form="comment_content_form"
                                   style="min-width:500px;min-height:100px"></textarea>
-                        <input type="submit" ng-click="submitComment(comment)" value="add comment" />
+                        <input type="submit" value="add comment" />
                     </form>
                 </div>
                 <br>
                 <br>
                 
-                <p style="margin-left:20px" id="notice"><%= notice %></p>
                 <br>
 
                 <div style="margin-left:10px" ng-repeat="comment in comments">
@@ -181,16 +180,21 @@
           requireBase: false
         }).hashPrefix('!');
     });
-    
-    app.controller('submission_form_ctrl', ['$scope', function($scope) {
-        $scope.submitComment = function(comment) {
-            alert("sfd");
-        };
-    }]);
 
-    app.controller('submission_ctrl', ['$scope', '$location', '$http',
-       function ($scope, $location, $http) {
-          $scope.agoFunction = function(date)  {
+    app.controller('submission_ctrl', ['$scope', '$location', '$http', '$window',
+       function ($scope, $location, $http, $window) {
+            $scope.submitComment = function() {
+                if ($scope.userId) {
+                    var text = document.getElementById('new_comment').value
+                    $http.post('https://hackernew.herokuapp.com/comments.json', {'submission_id': $scope.submissionId, 'content': text}, {headers: {'api_key': $scope.token, 'Content-type': 'application/json'}});
+                    $window.location.reload();
+                }
+                else {
+                    alert("Not authenticated.");
+                }
+            };
+            
+            $scope.agoFunction = function(date)  {
                 var time = (new Date().getTime() - new Date(date).getTime());
                 var timestring = "";
                 if (time < 3600*1000) {
