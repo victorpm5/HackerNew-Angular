@@ -43,52 +43,33 @@
                     <tr>
                         <td>
                             <div ng-repeat="submission in submissions">
-                                    hey
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <font color="grey" size="3">1.</font>
-                                                </td>
-                                                <td>
-                                                    <% if current_user != nil && current_user.id != {{ submission.user_id }} %>
-                                                    <form action="/comments/<%= comentari.id %>/vote" method="POST"
-                                                          id="upvote_comment_form">
-                                                        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-                                                        <% if current_user && !current_user.voted_for?(submission) %>
-                                                            <input type="hidden" name="reply[user_id]" value=<%= current_user.id %>>
-                                                            <input type="image" name="submit_vote" src="./img/grayarrow.gif">
-                                                        <% elsif !current_user %>
-                                                            <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                                                        <% end %>
-                                                    </form>
-                                                    <% elsif current_user != nil %>
-                                                        <font color="orange" size="3">*</font>
-                                                    <% else %>
-                                                        <a href="/auth/google_oauth2"><img src="./img/grayarrow.gif"></a>
-                                                    <% end %>
-                                                </td>
-                                                <td>
-                                                    <font color="black" size="3"><a style="text-decoration:none;" href="{{submission.url}}" >{{submission.title}}</a>
-                                                    </font> <font color="grey" size="2">({{submission.url}})</font>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <font color="grey" size="2">
-                                                        0 points by <a style="text-decoration:none;" href="/users/{{submission.user_id}}">{{submission.username}}</a>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <font color="grey" size="3">1.</font>
+                                                <input type="image" name="submit_vote" src="./img/grayarrow.gif">
+                                                <font color="black" size="3">
+                                                    <a style="text-decoration:none;" href="{{submission.url}}" >{{ submission.title }}</a>
+                                                </font>
+                                                <font color="grey" size="2">({{submission.url}})</font>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <font color="grey" size="2">
+                                                    0 points by <a style="text-decoration:none;" href="/users/{{submission.user_id}}">{{ submission.username }}</a>
 
-                                                        $scope.agoFunction({{submission.created_at}});
+                                                    {{ agoFunction(submission.created_at); }}
 
-                                                        <a style="text-decoration:none;" href="/submissions/<%= submission.id %>">0</a> comments
+                                                    <a style="text-decoration:none;" href="/">0</a> comments
 
-                                                    </font>
-                                                </td>
-                                            </tr>
-                                            <tr class="spacer" style="height:5px"></tr>
-                                        </tbody>
-                                    </table>
-                                
+                                                </font>
+                                            </td>
+                                        </tr>
+                                        <tr class="spacer" style="height:5px"></tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </td>
                     </tr>
@@ -96,17 +77,17 @@
             </table>
         </center>
     </body>
-
+    
     <script>
         var app = angular.module("submission_app", ["ngRoute"]);
-
+    
         app.config(function($locationProvider) {
             $locationProvider.html5Mode({
                 enabled: true,
                 requireBase: false
             }).hashPrefix('!');
         });
-
+    
         app.controller('submission_ctrl', ['$scope', '$location', '$http',
             function ($scope, $location, $http) {
                 $scope.agoFunction = function(date)  {
@@ -122,22 +103,16 @@
                         timestring = Math.round(time/(3600*24*1000)) + " days ago";
                     }
                     return timestring;
-                }
-                
-                $http.get("https://hackernew.herokuapp.com/submissions.json").then(function(response) {
-                    $scope.submissions = response.data;
-                });
+                };
                 
                 //Get ID out of current URL
-                var submission_id = $location.search().id;
-                $scope.submissionId = submission_id;
-
+    
                 var token_id = $location.search().token;
                 $scope.token = token_id;
-
+    
                 var user_id = $location.search().userid;
                 $scope.userId = user_id;
-
+    
                 if(user_id){
                     document.getElementById("login").href="/users/" + user_id;
                     document.getElementById("login").textContent = "usuari";
@@ -153,36 +128,11 @@
                     document.getElementById("login").textContent = "login";
                     document.getElementById("logout").style.display = "none";
                 }
-
-            document.getElementById('upvote_submission_form').action = "/submissions/"+submission_id+"/vote";
-                $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json").then(function(response) {
-                    $scope.submissionTitle = response.data.title;
-                    $scope.submissionText = response.data.text;
-                    $scope.submissionUrl = response.data.url;
-                    $scope.submissionText = response.data.text;
-                    $scope.timeString = $scope.agoFunction(response.data.created_at);
-                    $http.get(response.data._links.user.href).then(function(response) {
-                        $scope.submitter = response.data.name;
-                        $scope.submissionUserUrl = "./user.html?username="+response.data.name;
-                    });
-                    $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+"/comments.json").then(function(response) {
-                        $scope.numberOfComments = response.data.length;
-                        response.data.forEach(function(comment) {
-                            $http.get(comment._links.user.href).then(function(response) {
-                                comment.username = response.data.name;
-                            });
-                            $http.get("https://hackernew.herokuapp.com/comments/"+comment.id+"/replies.json").then(function(response) {
-                                comment.replies = response.data;
-                            });
-                            comment.ago = $scope.agoFunction(comment.created_at);
-                        });
-                        $scope.comments = response.data;
-                    });
+    
+                $http.get("https://hackernew.herokuapp.com/submissions.json").then(function(response) {
+                    $scope.submissions = response.data;
                 });
-                
             }]);
             
     </script>
-
-
 </div>
