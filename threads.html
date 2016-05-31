@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<div ng-app="threads_app" ng-controller="threads_ctrl">
+<head>
+    <title>{{ username }}'s comments | Hacker News</title>
+</head>
+
+<body>
+<center>
+    <table bgcolor="#f6f6ef" border="0" cellpadding="0" cellspacing="0" width="85%">
+        <tbody>
+        <tr>
+            <td bgcolor="ff6600">
+                <table style="padding:2px" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td style="width:18px;padding-right:4px">
+                            <a ng-href="./index.html?token={{token}}&userid={{userid}}" target="_self"><img src="./img/y18.gif"></a>
+                        </td>
+                        <td class="header">
+                            <font size="4"> <b><a href="./index.html?token={{token}}&userid={{userid}}" target="_self">Hacker News</a></b></font>
+                            <font size="3"> 
+                                <a href="./index.html?token={{token}}&userid={{userd}}" target="_self">new</a> | 
+                                <a id="threads" href="./threads.html?token={{token}}&userid={{userid}}" target="_self"><font color="white">threads</font> | </a> 
+                                <a href="./ask.html?token={{token}}&userid={{userid}}" target="_self">ask</a> | 
+                                <a target="_self" href="./new_submission.html?token={{token}}&userid={{userid}}" target="_self">submit</a>
+                            </font>
+                        </td>
+                        <td>
+                            <font size="3">
+                                <div align="right">
+                                    <a id="login" href="#" target="_self" >Log in</a>
+                                    <a id="logout" href="#" target="_self" >| Log out</a>
+                                </div>
+                            </font>
+                        </td>
+                        <td class="spacer" style="width:10px"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr style="height:10px"></tr>
+            <td>
+                <!-- comments -->
+              <div ng-repeat="comment in comments">
+                <table>
+                    <tbody>
+                    <tr>
+                        <td class="spacer" style="width:2px"></td>
+                        <td>
+                            <font color="#ff6600" size="3">*</font>
+                        </td>
+                        <td class="spacer" style="width:5px"></td>
+                        <td>
+                            <font color="grey" size="2">
+                                0 points by 
+                                <a style="text-decoration:none;" href={{ userUrl(comment.user_id); }}><font color="#3c963c">{{ username }}</font></a> 
+                                |
+                                {{ agoFunction(comment.created_at); }}
+                                |
+                                    <a style="text-decoration:none;" href={{ submissionUrl(comment.submission_id); }}>parent</a> | 
+                                    on: {{ commentSubmission(comment.submission_id); }}
+                                    
+                            </font>
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td class="spacer" style="width:21px"></td>
+                        <td>
+                            <font color="black" size="2">
+                                {{ comment.content }}
+                            </font>
+                        </td>
+                    </tr>
+                    <tr class="spacer" style="height:8px"></tr>
+                    </tbody>
+                </table>
+              </div>
+            </td>
+
+        </tbody>
+    </table>
+</center>
+</body>
+<script>
+        var app = angular.module("threads_app", ["ngRoute"]);
+
+        app.config(function($locationProvider) {
+            $locationProvider.html5Mode({
+                enabled: true,
+                requireBase: false
+            }).hashPrefix('!');
+        });
+
+        app.controller('threads_ctrl', ['$scope', '$location', '$http',
+            function ($scope, $location, $http) {
+
+                $scope.agoFunction = function(date)  {
+                    var time = (new Date().getTime() - new Date(date).getTime());
+                    var timestring = "";
+                    if (time < 3600*1000) {
+                        timestring = Math.round(time/(60*1000)) + " minutes ago";
+                    }
+                    if (time >= 3600*1000 && time < 3600*1000*24) {
+                        timestring = Math.round(time/(3600*1000)) + " hours ago";
+                    }
+                    if (time >= 3600*1000*24) {
+                        timestring = Math.round(time/(3600*24*1000)) + " days ago";
+                    }
+                    return timestring;
+                };
+
+                //Get ID out of current URL
+
+                var token_id = $location.search().token;
+                $scope.token = token_id;
+
+                var user_id = $location.search().userid;
+                $scope.userid = user_id;
+
+                if(user_id){
+                    document.getElementById("login").href="./user_profile.html?userprofileid=" + user_id + "&token=" + token_id + "&userid=" + user_id;
+                    document.getElementById("login").textContent = "usuari";
+                    document.getElementById("logout").style.display = "inline";
+                    document.getElementById("logout").href="/index.html";
+                    document.getElementById("threads").style.display = "inline";
+                    $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
+                            .then(function(response) {
+                                document.getElementById("login").textContent = response.data.name;
+                                $scope.username = response.data.name;
+                            });
+                }
+                else{
+                    document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL;
+                    document.getElementById("login").textContent = "login";
+                    document.getElementById("logout").style.display = "none";
+                    document.getElementById("threads").style.display = "none";
+                }
+
+                $http.get("https://hackernew.herokuapp.com/users/"+user_id+"/comments.json").then(function(response) {
+                    $scope.comments = response.data;
+                });
+                
+                $scope.commentSubmission = function(submission_id) {
+                    $http.get("https://hackernew.herokuapp.com/submissions/"+submission_id+".json")
+                        .then(function(response) {
+                            return response.data.title;
+                        });
+                };
+                
+                $scope.replyComment = function(comment_id) {
+                    $http.get("https://hackernew.herokuapp.com/comments/"+comment_id+".json")
+                        .then(function(response) {
+                            return response.data.content;
+                    });
+                };
+                
+                $scope.submissionUrl = function(submission_id) {
+                    return "./submission.html?id=" + submission_id + "&token=" + token_id + "&userid=" + user_id;
+                };
+                
+                $scope.commentUrl = function(comment_id) {
+                    return "./new_reply.html?id=" + comment_id + "&token=" + token_id + "&userid=" + user_id;
+                };
+                
+                $scope.userUrl = function(user_id) {
+                    return "././user_profile.html?userprofileid=" + user_id + "&token=" + token_id + "&userid=" + user_id;
+                };
+                
+            }]);
+    </script>

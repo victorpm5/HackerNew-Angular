@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<div ng-app="submission_app" ng-controller="submission_ctrl">
+    <head>
+        <title> {{ user_name }}'s submissions | Hacker News</title>
+    </head>
+    <body>
+        <center>
+            <table bgcolor="#f6f6ef" border="0" cellpadding="0" cellspacing="0" width="85%">
+                <tbody>
+                    <tr>
+                        <td bgcolor="ff6600">
+                            <table style="padding:2px" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:18px;padding-right:4px">
+                                            <a ng-href="./index.html?token={{token}}&userid={{my_user_id}}" target="_self"><img src="./img/y18.gif"></a>
+                                        </td>
+                                        <td class="header">
+                                            <font size="4"> <b><a target="_self" ng-href="./index.html?token={{token}}&userid={{my_user_id}}">Hacker News</a></b></font>
+                                            <font size="3"> 
+                                                <a target="_self" ng-href="./index.html?token={{token}}&userid={{my_user_id}}">new</a> |
+                                                <a ng-href="./threads.html?token={{token}}&userid={{my_user_id}}" target="_self">threads</a> | 
+                                                <a ng-href="./ask.html?token={{token}}&userid={{my_user_id}}" target="_self">ask</a> | 
+                                                <a target="_self" ng-href="./submissions/new.html?token={{token}}&userid={{my_user_id}}">submit</a> | 
+                                                <font color="white">{{ user_name }}'s submissions</font>
+                                            </font>
+                                        </td>
+                                        <td>
+                                            <font size="3">
+                                                <div align="right">
+                                                    <a id="login" href="#" target="_self" >Log in</a>
+                                                    <a id="logout" href="./index.html" target="_self" >| Log out</a>
+                                                </div>
+                                            </font>
+                                        </td>
+                                        <td class="spacer" style="width:10px"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr style="height:10px"></tr>
+                    <tr>
+                        <td>
+                            <div ng-repeat="submission in submissions">
+                                <div ng-if="submission.user_id == user_id ">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <font color="grey" size="3"> * </font>
+                                                    <input type="image" name="submit_vote" src="./img/grayarrow.gif">
+                                                    <font color="black" size="3">
+                                                        <a style="text-decoration:none;" href="{{submission.url}}" >{{ submission.title }}</a>
+                                                    </font>
+                                                    <font color="grey" size="2">({{submission.url}})</font>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <font color="grey" size="2">
+                                                        0 points by <a style="text-decoration:none;" href="{{ userUrl(submission.user_id); }}" target="_self">{{ submission.username }}</a>
+                                                        |
+                                                        {{ agoFunction(submission.created_at); }}
+                                                        |
+                                                        <a style="text-decoration:none;" href="{{ submissionUrl(submission.id); }}" target="_self">{{ submission.comments.length }}</a> comments
+    
+                                                    </font>
+                                                </td>
+                                            </tr>
+                                            <tr class="spacer" style="height:5px"></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div ng-repeat="ask in asks">
+                                <div ng-if="ask.user_id == user_id ">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <font color="grey" size="3"> * </font>
+                                                    <input type="image" name="submit_vote" src="./img/grayarrow.gif">
+                                                    <font color="black" size="3">
+                                                        <a style="text-decoration:none;" href="{{ask.url}}" >{{ ask.title }}</a>
+                                                    </font>
+                                                    <font color="grey" size="2">({{ask.url}})</font>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <font color="grey" size="2">
+                                                        0 points by <a style="text-decoration:none;" href="{{ userUrl(ask.user_id); }}" target="_self">{{ ask.username }}</a>
+                                                        |
+                                                        {{ agoFunction(ask.created_at); }}
+                                                        |
+                                                        <a style="text-decoration:none;" href="{{ submissionUrl(ask.id); }}" target="_self">{{ ask.comments.length }}</a> comments
+    
+                                                    </font>
+                                                </td>
+                                            </tr>
+                                            <tr class="spacer" style="height:5px"></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </center>
+    </body>
+    
+    <script>
+        var app = angular.module("submission_app", ["ngRoute"]);
+    
+        app.config(function($locationProvider) {
+            $locationProvider.html5Mode({
+                enabled: true,
+                requireBase: false
+            }).hashPrefix('!');
+        });
+    
+        app.controller('submission_ctrl', ['$scope', '$location', '$http',
+            function ($scope, $location, $http) {
+                $scope.agoFunction = function(date)  {
+                    var time = (new Date().getTime() - new Date(date).getTime());
+                    var timestring = "";
+                    if (time < 3600*1000) {
+                        timestring = Math.round(time/(60*1000)) + " minutes ago";
+                    }
+                    if (time >= 3600*1000 && time < 3600*1000*24) {
+                        timestring = Math.round(time/(3600*1000)) + " hours ago";
+                    }
+                    if (time >= 3600*1000*24) {
+                        timestring = Math.round(time/(3600*24*1000)) + " days ago";
+                    }
+                    return timestring;
+                };
+                
+                
+                var token_id = $location.search().token;
+                $scope.token = token_id;
+    
+                var my_user_id = $location.search().userid;
+                $scope.my_user_id = my_user_id;
+                
+                var user_id = $location.search().userprofileid;
+                $scope.user_id = user_id;
+    
+                if(my_user_id){
+                    document.getElementById("login").href="./user_profile.html?userprofileid=" + my_user_id + "&token=" + token_id + "&userid=" + my_user_id;
+                    document.getElementById("login").textContent = "usuari";
+                    document.getElementById("logout").style.display = "inline";
+                    document.getElementById("logout").href="./index.html";
+                    $http.get("https://hackernew.herokuapp.com/users/"+my_user_id+".json")
+                            .then(function(response) {
+                                document.getElementById("login").textContent = response.data.name;
+                            });
+                }
+                else{
+                    document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL;
+                    document.getElementById("login").textContent = "login";
+                    document.getElementById("logout").style.display = "none";
+                }
+    
+                $http.get("https://hackernew.herokuapp.com/submissions.json").then(function(response) {
+                    $scope.submissions = response.data;
+                    $scope.submissions.forEach(function(submission) {
+                        $http.get(submission._links.user.href).then(function(response) {
+                            submission.username = response.data.name;
+                        });
+                        $http.get("https://hackernew.herokuapp.com/submissions/" + submission.id + "/comments.json").then(function(response) {
+                            submission.comments = response.data;
+                        });
+                    });
+                });
+                
+                $http.get("https://hackernew.herokuapp.com/ask.json").then(function(response) {
+                    $scope.asks = response.data;
+                    $scope.asks.forEach(function(ask) {
+                        $http.get(ask._links.user.href).then(function(response) {
+                            ask.username = response.data.name;
+                        });
+                        $http.get("https://hackernew.herokuapp.com/submissions/" + ask.id + "/comments.json").then(function(response) {
+                            ask.comments = response.data;
+                        });
+                    });
+                });
+                
+                $scope.userUrl = function(my_user_id) {
+                    return "././user_profile.html?userprofileid=" + my_user_id + "&token=" + token_id + "&userid=" + my_user_id;
+                };
+                
+                $scope.submissionUrl = function(submission_id) {
+                    return "./submission.html?id=" + submission_id + "&token=" + token_id + "&userid=" + my_user_id;
+                };
+                
+                $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json").then(function(response) {
+                    $scope.user_id = response.data.id;
+                    $scope.user_name = response.data.name;
+                    
+                });
+                
+            }]);
+            
+    </script>
+</div>
