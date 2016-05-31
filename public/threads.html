@@ -77,49 +77,6 @@
                         </td>
                     </tr>
                     <tr class="spacer" style="height:8px"></tr>
-                    <% end %>
-                    <% end %>
-                    </tbody>
-                </table>
-              </div>
-              
-              <!-- replies -->
-              
-             <div ng-repeat="reply in replies">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td class="spacer" style="width:2px"></td>
-                        <td>
-                            <font color="#ff6600" size="3">*</font>
-                        </td>
-                        <td class="spacer" style="width:5px"></td>
-                        <td>
-                            <font color="grey" size="2">
-                                0 points by 
-                                <a style="text-decoration:none;" href={{ userUrl(reply.user_id); }}><font color="#3c963c">{{ username }}</font></a> 
-                                |
-                                {{ agoFunction(reply.created_at); }}
-                                |
-                                    <a style="text-decoration:none;" href={{ commentUrl(reply.comment_id); }}>parent</a> | 
-                                    on: {{ replyComment(reply.comment_id); }}
-                                    
-                            </font>
-                        </td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <td class="spacer" style="width:21px"></td>
-                        <td>
-                            <font color="black" size="2">
-                                {{ reply.content }}
-                            </font>
-                        </td>
-                    </tr>
-                    <tr class="spacer" style="height:8px"></tr>
-                    <% end %>
-                    <% end %>
                     </tbody>
                 </table>
               </div>
@@ -182,9 +139,8 @@
                     document.getElementById("logout").style.display = "none";
                 }
 
-                $http.get("https://hackernew.herokuapp.com/threads/"+user_id+".json").then(function(response) {
-                    $scope.replies = response.data.replies;
-                    $scope.comments = response.data.comments;
+                $http.get("https://hackernew.herokuapp.com/users/"+user_id+"/comments.json").then(function(response) {
+                    $scope.comments = response.data;
                 });
                 
                 $scope.commentSubmission = function(submission_id) {
