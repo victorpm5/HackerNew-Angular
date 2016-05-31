@@ -130,6 +130,8 @@
                     document.getElementById("new").target="_self";
                     document.getElementById("photo").href="./index.html?token=" + token_id + "&userid=" + user_id;
                     document.getElementById("photo").target="_self";
+                    document.getElementById("title").href="./index.html?token=" + token_id + "&userid=" + user_id;
+                    document.getElementById("title").target="_self";
                     $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
                             .then(function(response) {
                                 document.getElementById("login").textContent = response.data.name;
