@@ -191,11 +191,11 @@
                 });
                 
                 $scope.userUrl = function(my_user_id) {
-                    return "././user_profile.html?userprofileid=" + my_user_id;
+                    return "././user_profile.html?userprofileid=" + my_user_id + "&token=" + token_id + "&userid=" + my_user_id;
                 };
                 
                 $scope.submissionUrl = function(submission_id) {
-                    return "./submission.html?id=" + submission_id;
+                    return "./submission.html?id=" + submission_id + "&token=" + token_id + "&userid=" + my_user_id;
                 };
                 
                 $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json").then(function(response) {
