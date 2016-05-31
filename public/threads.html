@@ -19,10 +19,10 @@
                             <a ng-href="./index.html?token={{token}}&userid={{userid}}" target="_self"><img src="./img/y18.gif"></a>
                         </td>
                         <td class="header">
-                            <font size="4"> <b><a href="./index.html?token={{token}}&userid={{userid}}">Hacker News</a></b></font>
+                            <font size="4"> <b><a href="./index.html?token={{token}}&userid={{userid}}" target="_self">Hacker News</a></b></font>
                             <font size="3"> 
                                 <a href="./index.html?token={{token}}&userid={{userd}}" target="_self">new</a> | 
-                                <a href="./threads.html?token={{token}}&userid={{userid}}" target="_self">threads</a> | 
+                                <a id="threads" href="./threads.html?token={{token}}&userid={{userid}}" target="_self"><font color="white">threads</font> | </a> 
                                 <a href="./ask.html?token={{token}}&userid={{userid}}" target="_self">ask</a> | 
                                 <a target="_self" href="./new_submission.html?token={{token}}&userid={{userid}}" target="_self">submit</a>
                             </font>
@@ -127,6 +127,7 @@
                     document.getElementById("login").textContent = "usuari";
                     document.getElementById("logout").style.display = "inline";
                     document.getElementById("logout").href="/index.html";
+                    document.getElementById("threads").style.display = "inline";
                     $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json")
                             .then(function(response) {
                                 document.getElementById("login").textContent = response.data.name;
@@ -137,6 +138,7 @@
                     document.getElementById("login").href="https://hackernew.herokuapp.com/signin?url=" + document.URL;
                     document.getElementById("login").textContent = "login";
                     document.getElementById("logout").style.display = "none";
+                    document.getElementById("threads").style.display = "none";
                 }
 
                 $http.get("https://hackernew.herokuapp.com/users/"+user_id+"/comments.json").then(function(response) {
