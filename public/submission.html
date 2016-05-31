@@ -148,8 +148,9 @@
             $scope.submitComment = function() {
                 if ($scope.userId) {
                     var text = document.getElementById('new_comment').value
-                    $http.post('https://hackernew.herokuapp.com/comments.json', {'submission_id': $scope.submissionId, 'content': text}, {headers: {'api_key': $scope.token, 'Content-type': 'application/json'}});
-                    $window.location.reload();
+                    $http.post('https://hackernew.herokuapp.com/comments.json', {'submission_id': $scope.submissionId, 'content': text}, {headers: {'api_key': $scope.token, 'Content-type': 'application/json'}}).then(function(response) {
+                        $window.location.reload();
+                    });
                 }
                 else {
                     alert("Not authenticated.");
