@@ -89,8 +89,10 @@
                 $scope.updateUser = function() {
                     if ($scope.my_user_id) {
                         var text = document.getElementById('update_user').value
-                        $http.put('https://hackernew.herokuapp.com/users.json', {'about': text}, {headers: {'api_key': $scope.token, 'Content-type': 'application/json'}});
-                        $window.location.reload();
+                        $http.put('https://hackernew.herokuapp.com/users.json', {'about': text}, {headers: {'api_key': $scope.token, 'Content-type': 'application/json'}}).then(function(response) {
+                            
+                            $window.location.reload();
+                        });
                     }
                     else {
                         alert("Not authenticated.");
