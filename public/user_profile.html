@@ -156,9 +156,14 @@
                     $scope.user_email = response.data.email;
                     $scope.user_oauth_token = response.data.oauth_token;
                     
-                    if (token_id){
+                    if (token_id && user_id == my_user_id){
                         $scope.editUrl = "./user_edit.html?userprofileid="+response.data.id+"&token="+token_id+"&userid="+my_user_id;
                         $scope.commentsUrl = "./threads.html?token="+token_id+"&userid="+my_user_id;
+                        $scope.submissionsUrl = "./user_submissions.html?userprofileid="+response.data.id+"&token="+token_id+"&userid="+my_user_id;
+                    }
+                    else if (token_id){
+                        $scope.editUrl = "./user_edit.html?userprofileid="+response.data.id+"&token="+token_id+"&userid="+my_user_id;
+                        $scope.commentsUrl = "./user_comments.html?userprofileid="+response.data.id+"&token="+token_id+"&userid="+my_user_id;
                         $scope.submissionsUrl = "./user_submissions.html?userprofileid="+response.data.id+"&token="+token_id+"&userid="+my_user_id;
                     }
                     else {
