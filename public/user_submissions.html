@@ -151,7 +151,7 @@
                 $scope.user_id = user_id;
     
                 if(my_user_id){
-                    document.getElementById("login").href="./user_profile.html?userprofileid=" + my_user_id + "&token=" + token_id + "&userid=" + user_id;
+                    document.getElementById("login").href="./user_profile.html?userprofileid=" + my_user_id + "&token=" + token_id + "&userid=" + my_user_id;
                     document.getElementById("login").textContent = "usuari";
                     document.getElementById("logout").style.display = "inline";
                     document.getElementById("logout").href="./index.html";

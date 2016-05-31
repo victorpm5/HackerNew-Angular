@@ -15,15 +15,15 @@
                                 <tbody>
                                     <tr>
                                         <td style="width:18px;padding-right:4px">
-                                            <a ng-href="./index.html?token={{token}}&userid={{userId}}" target="_self"><img src="./img/y18.gif"></a>
+                                            <a ng-href="./index.html?token={{token}}&userid={{my_user_id}}" target="_self"><img src="./img/y18.gif"></a>
                                         </td>
                                         <td class="header">
-                                            <font size="4"> <b><a target="_self" ng-href="./index.html?token={{token}}&userid={{userId}}">Hacker News</a></b></font>
+                                            <font size="4"> <b><a target="_self" ng-href="./index.html?token={{token}}&userid={{my_user_id}}">Hacker News</a></b></font>
                                             <font size="3"> 
-                                                <a target="_self" ng-href="./index.html?token={{token}}&userid={{userId}}">new</a> |
-                                                <a ng-href="./threads.html?token={{token}}&userid={{userId}}" target="_self">threads</a> | 
-                                                <a ng-href="./ask.html?token={{token}}&userid={{userId}}" target="_self">ask</a> | 
-                                                <a target="_self" ng-href="./submissions/new.html?token={{token}}&userid={{userId}}">submit</a> | 
+                                                <a target="_self" ng-href="./index.html?token={{token}}&userid={{my_user_id}}">new</a> |
+                                                <a ng-href="./threads.html?token={{token}}&userid={{my_user_id}}" target="_self">threads</a> | 
+                                                <a ng-href="./ask.html?token={{token}}&userid={{my_user_id}}" target="_self">ask</a> | 
+                                                <a target="_self" ng-href="./submissions/new.html?token={{token}}&userid={{my_user_id}}">submit</a> | 
                                                 <font color="white">{{ user_name }}'s comments</font>
                                             </font>
                                         </td>
@@ -151,7 +151,7 @@
                 $scope.user_id = user_id;
     
                 if(my_user_id){
-                    document.getElementById("login").href="./user_profile.html?userprofileid=" + my_user_id + "&token=" + token_id + "&userid=" + user_id;
+                    document.getElementById("login").href="./user_profile.html?userprofileid=" + my_user_id + "&token=" + token_id + "&userid=" + my_user_id;
                     document.getElementById("login").textContent = "usuari";
                     document.getElementById("logout").style.display = "inline";
                     document.getElementById("logout").href="./index.html";
@@ -191,11 +191,11 @@
                 });
                 
                 $scope.userUrl = function(my_user_id) {
-                    return "././user_profile.html?userprofileid=" + my_user_id;
+                    return "././user_profile.html?userprofileid=" + my_user_id + "&token=" + token_id + "&userid=" + my_user_id;
                 };
                 
                 $scope.submissionUrl = function(submission_id) {
-                    return "./submission.html?id=" + submission_id;
+                    return "./submission.html?id=" + submission_id + "&token=" + token_id + "&userid=" + my_user_id;
                 };
                 
                 $http.get("https://hackernew.herokuapp.com/users/"+user_id+".json").then(function(response) {
